@@ -1,0 +1,727 @@
+[index.html](https://github.com/user-attachments/files/27003716/index.html)
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Портал стажёра | РАЗ! ГРУЗЧИКИ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .portal-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .portal-header {
+            background: #0f172a;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .logo span { color: #22c55e; }
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .user-name-clickable {
+            background: #1e293b;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .user-name-clickable:hover {
+            background: #334155;
+        }
+        .reset-btn {
+            background: none;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            background: #334155;
+            color: white;
+        }
+        .portal-main {
+            padding: 32px;
+        }
+        .welcome-block {
+            background: #fef9e3;
+            border-left: 6px solid #eab308;
+            padding: 20px 24px;
+            border-radius: 20px;
+            margin-bottom: 36px;
+        }
+        .welcome-quote {
+            font-size: 18px;
+            font-weight: 500;
+            color: #854d0e;
+        }
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        .module-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e9eef3;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .module-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #f9fafb;
+        }
+        .module-card:not(.locked):hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 24px -8px rgba(0,0,0,0.12);
+        }
+        .module-icon { font-size: 40px; margin-bottom: 16px; }
+        .module-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .module-desc { font-size: 14px; color: #475569; margin-bottom: 16px; }
+        .module-status {
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            background: #eef2ff;
+            color: #1e40af;
+        }
+        .module-status.locked-status { background: #f1f5f9; color: #64748b; }
+        .btn-back {
+            background: none;
+            border: 1px solid #cbd5e1;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+        .btn-primary {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .track-container {
+            margin-top: 20px;
+            border-top: 1px solid #e9eef3;
+            padding-top: 24px;
+        }
+        .track-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .track-step:hover {
+            background: #f1f5f9;
+        }
+        .step-status.done { background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 20px; font-size: 13px; }
+        .step-status.pending { background: #f1f5f9; color: #64748b; padding: 4px 12px; border-radius: 20px; font-size: 13px; }
+        .reg-card {
+            background: white;
+            padding: 32px;
+            border-radius: 28px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .reg-card input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 60px;
+            font-size: 16px;
+        }
+        .hidden { display: none; }
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 28px;
+            padding: 28px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .achievement-item {
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .badge-gold { background: #fef3c7; color: #b45309; }
+        .chats-links {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e9eef3;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .chat-link {
+            background: #f1f5f9;
+            padding: 10px 24px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e293b;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chat-link:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        .study-item {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .study-item-title {
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        .study-item-content {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        .study-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .study-btn.completed {
+            background: #22c55e;
+            color: white;
+        }
+        .script-link {
+            display: inline-block;
+            margin-top: 12px;
+            background: #0f172a;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #22c55e;
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s;
+        }
+        .congrats-modal {
+            text-align: center;
+            background: white;
+            border-radius: 32px;
+            padding: 40px;
+            max-width: 500px;
+        }
+        .congrats-modal h2 {
+            font-size: 36px;
+            color: #22c55e;
+            margin: 16px 0;
+        }
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .bp-block {
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 16px 24px;
+            width: 100%;
+            text-align: center;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .bp-block.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .bp-block.completed {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .bp-block-0 { background: #0f172a; color: white; }
+        .bp-block-1 { background: #eff6ff; }
+        .bp-block-2 { background: #dcfce7; }
+        .bp-block-3 { background: #fef9e3; }
+        .bp-block-4 { background: #e0e7ff; }
+        .bp-block-5 { background: #0f172a; color: white; }
+        .arrow-down {
+            font-size: 28px;
+            color: #94a3b8;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 48px;
+            font-size: 14px;
+            z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+<div class="portal-container" id="app">
+    <div id="registrationScreen" style="padding: 32px;">
+        <div class="reg-card">
+            <h2>🎯 Доступ к порталу</h2>
+            <p style="margin-bottom: 20px;">Зарегистрируйся, чтобы начать путь</p>
+            <input type="text" id="regName" placeholder="ФИО">
+            <input type="tel" id="regPhone" placeholder="Телефон">
+            <button class="btn-primary" id="registerBtn" style="width: 100%;">Продолжить →</button>
+        </div>
+    </div>
+
+    <div id="portalScreen" class="hidden">
+        <div class="portal-header">
+            <div class="logo">РАЗ! <span>ГРУЗЧИКИ</span></div>
+            <div class="user-area">
+                <div class="user-name-clickable" id="userNameBtn"></div>
+                <button class="reset-btn" id="resetBtn">🔄 Сброс</button>
+            </div>
+        </div>
+        <div class="portal-main">
+            <div class="welcome-block">
+                <div class="welcome-quote">🌟 «Здесь растят чемпионов продаж» — добро пожаловать, <span id="welcomeName"></span>!</div>
+                <div style="margin-top: 10px; font-size: 14px;">Растем вместе → каждый этап приближает к цели</div>
+            </div>
+            <div id="navArea"><button class="btn-back" id="backToModulesBtn" style="display: none;">← Все модули</button></div>
+            <div id="modulesGrid" class="modules-grid">
+                <div class="module-card" data-module="training">
+                    <div class="module-icon">🎓</div>
+                    <div class="module-title">Обучение</div>
+                    <div class="module-desc">Блоки, тесты, экзамен — твой старт</div>
+                    <div class="module-status">✓ Доступ открыт</div>
+                </div>
+                <div class="module-card locked" data-module="simulator">
+                    <div class="module-icon">🎮</div>
+                    <div class="module-title">Тренажёры</div>
+                    <div class="module-desc">Интерактивные сценарии CRM</div>
+                    <div class="module-status locked-status">🔒 Закрыто</div>
+                </div>
+                <div class="module-card locked" data-module="adaptation">
+                    <div class="module-icon">⚙️</div>
+                    <div class="module-title">Адаптация</div>
+                    <div class="module-desc">Работа с наставником, план KPI</div>
+                    <div class="module-status locked-status">🔒 Закрыто</div>
+                </div>
+                <div class="module-card locked" data-module="cases">
+                    <div class="module-icon">📚</div>
+                    <div class="module-title">Кейсы</div>
+                    <div class="module-desc">Разбор реальных ситуаций</div>
+                    <div class="module-status locked-status">🔒 Закрыто</div>
+                </div>
+            </div>
+            <div id="trackContent"></div>
+            <div class="chats-links">
+                <a href="#" target="_blank" class="chat-link" id="posterChatLink">📢 Афиша компании</a>
+                <a href="#" target="_blank" class="chat-link" id="sportChatLink">⚽ Чат спортивных мероприятий</a>
+                <a href="#" target="_blank" class="chat-link" id="salesChatLink">💬 Чат отдела продаж</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== ОБЩАЯ ЛОГИКА ПОРТАЛА ==========
+    let currentUser = null;
+    let achievements = { exam5: false, cash40k: false, cash150k: false };
+    let records = { bestWeekCash: 0, contestWins: 0 };
+
+    function saveAll() {
+        localStorage.setItem('portalUser', JSON.stringify(currentUser));
+        localStorage.setItem('achievements', JSON.stringify(achievements));
+        localStorage.setItem('records', JSON.stringify(records));
+    }
+    function loadAll() {
+        const u = localStorage.getItem('portalUser');
+        if (u) currentUser = JSON.parse(u);
+        const a = localStorage.getItem('achievements');
+        if (a) achievements = JSON.parse(a);
+        const r = localStorage.getItem('records');
+        if (r) records = JSON.parse(r);
+    }
+    function isModuleCompleted(moduleKey) {
+        return localStorage.getItem(`completed_${moduleKey}`) === 'true';
+    }
+    function setModuleCompleted(moduleKey, val) {
+        localStorage.setItem(`completed_${moduleKey}`, val);
+    }
+
+    // ========== БИЗНЕС-ПРОЦЕСС ==========
+    const bpBlocks = [
+        { id: 0, title: "📞 Приём обращения", desc: "Звонок / заявка с сайта", blockClass: "bp-block-0", items: {
+            goal: "Обработать обращение мгновенно! По статистике, шанс продажи увеличивается в 2 раза, если ответить клиенту в течение 10 секунд.",
+            mandatory: "Обязательно включить позитивный настрой. Клиент чувствует по голосу, что ты улыбаешься! ТЫ ЛИЦО КОМПАНИИ.",
+            result: "Составленная заявка!",
+            tools: "Скрипт + Настроение + Экспертиза"
+        }, scriptLink: "#" },
+        { id: 1, title: "📝 Составление заявки", desc: "Фиксируем: адрес, объём, дату, цену", blockClass: "bp-block-1", items: {
+            goal: "Оформить заявку верно, без ошибок.",
+            mandatory: "Обязательно уточняй детали по работам. Нужно верно передать информацию исполнителям!",
+            result: "Оформленная заявка (правильное описание, верный адрес, нужное время!)",
+            tools: "CRM + твоя внимательность"
+        }},
+        { id: 2, title: "👥 Назначение исполнителя", desc: "Грузчики / водители / техника", blockClass: "bp-block-2", items: {
+            goal: "Подобрать подходящих исполнителей под задачу.",
+            mandatory: "Учитывай сложность работ, удалённость, загруженность.",
+            result: "Назначенные исполнители, подтвердившие выход.",
+            tools: "CRM (список грузчиков, рейтинг, занятость)"
+        }},
+        { id: 3, title: "⏱️ Контроль / техподдержка", desc: "Следим за приездом, решаем проблемы", blockClass: "bp-block-3", items: {
+            goal: "Убедиться, что исполнители приехали и работают.",
+            mandatory: "Свяжись с исполнителями за час до выезда. Если проблема — предупреди клиента и найди замену.",
+            result: "Работа выполнена, клиент доволен.",
+            tools: "CRM + телефон + чаты с исполнителями"
+        }},
+        { id: 4, title: "💰 Получение оплаты", desc: "Деньги от клиента → расчёт с грузчиками", blockClass: "bp-block-4", items: {
+            goal: "Закрыть финансовый вопрос чисто и быстро.",
+            mandatory: "Проверь сумму. При оплате наличными — выдай чек.",
+            result: "Деньги получены, грузчики рассчитаны, заявка закрыта.",
+            tools: "Касса / эквайринг / расчётный счёт + CRM"
+        }},
+        { id: 5, title: "🏆 ЗАЯВКА ЗАКРЫТА", desc: "Результат достигнут, клиент доволен", blockClass: "bp-block-5", isFinal: true }
+    ];
+
+    let bpCompleted = [false, false, false, false, false, false];
+    let bpActive = 0;
+
+    function loadBPProgress() {
+        const saved = localStorage.getItem('bpCompleted');
+        if (saved) bpCompleted = JSON.parse(saved);
+        const savedActive = localStorage.getItem('bpActive');
+        if (savedActive !== null) bpActive = parseInt(savedActive);
+        for (let i = 0; i < bpCompleted.length; i++) {
+            if (!bpCompleted[i]) { bpActive = i; break; }
+        }
+        if (bpCompleted.every(v => v === true)) bpActive = bpCompleted.length;
+    }
+    function saveBPProgress() {
+        localStorage.setItem('bpCompleted', JSON.stringify(bpCompleted));
+        localStorage.setItem('bpActive', bpActive);
+    }
+
+    function showToast(msg) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
+
+    function showFinalCongrats() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<div class="congrats-modal">
+            <div style="font-size:64px;">🎉🏆🎉</div>
+            <h2>Вот это ты внатуре молодец!!!!</h2>
+            <p>Ты изучил весь бизнес-процесс!</p>
+            <button class="btn-primary" onclick="this.closest('.modal').remove()">💪 Погнали!</button>
+        </div>`;
+        document.body.appendChild(modal);
+    }
+
+    function openStudyModal(blockIdx) {
+        const block = bpBlocks[blockIdx];
+        if (block.isFinal) { showFinalCongrats(); return; }
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        const stored = JSON.parse(localStorage.getItem(`bp_block_${blockIdx}`) || '{}');
+        const itemKeys = ['goal', 'mandatory', 'result', 'tools'];
+        const titles = { goal: '🎯 ЦЕЛЬ', mandatory: '⚠️ ОБЯЗАТЕЛЬНО', result: '✅ РЕЗУЛЬТАТ', tools: '🛠️ ИНСТРУМЕНТЫ' };
+        
+        let itemsHtml = '';
+        for (let key of itemKeys) {
+            const isDone = stored[key] === true;
+            itemsHtml += `<div class="study-item" data-item="${key}">
+                <div class="study-item-title">${titles[key]}</div>
+                <div class="study-item-content">${block.items[key]}</div>
+                <button class="study-btn ${isDone ? 'completed' : ''}" data-item="${key}">${isDone ? '✅ Принято' : '📖 Понял, принял'}</button>
+            </div>`;
+        }
+        const scriptBtn = block.scriptLink ? `<a href="${block.scriptLink}" target="_blank" class="script-link">📄 Открыть скрипт</a>` : '';
+        modal.innerHTML = `<div class="modal-content"><h3>${block.title}</h3>${itemsHtml}${scriptBtn}<div style="margin-top:20px;"><button class="close-modal btn-primary" style="background:#e2e8f0; color:#1e293b;">Закрыть</button></div></div>`;
+        document.body.appendChild(modal);
+        
+        modal.querySelectorAll('.study-btn').forEach(btn => {
+            btn.onclick = () => {
+                const item = btn.getAttribute('data-item');
+                stored[item] = true;
+                localStorage.setItem(`bp_block_${blockIdx}`, JSON.stringify(stored));
+                btn.classList.add('completed');
+                btn.textContent = '✅ Принято';
+                
+                const allDone = itemKeys.every(k => stored[k] === true);
+                if (allDone && !bpCompleted[blockIdx]) {
+                    bpCompleted[blockIdx] = true;
+                    saveBPProgress();
+                    for (let i = 0; i < bpCompleted.length; i++) {
+                        if (!bpCompleted[i]) { bpActive = i; break; }
+                    }
+                    if (bpCompleted.every(v => v === true)) bpActive = bpCompleted.length;
+                    saveBPProgress();
+                    modal.remove();
+                    showToast(`✅ Блок "${block.title}" изучен!`);
+                    renderBP();
+                }
+            };
+        });
+        modal.querySelector('.close-modal').onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    }
+
+    function renderBP() {
+        const container = document.getElementById('bpContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < bpBlocks.length; i++) {
+            const b = bpBlocks[i];
+            const div = document.createElement('div');
+            div.className = `bp-block ${b.blockClass}`;
+            if (bpCompleted[i]) div.classList.add('completed');
+            div.innerHTML = `<div style="font-weight:700;">${b.title}</div><div style="font-size:12px; opacity:0.7;">${b.desc}</div>`;
+            div.onclick = () => {
+                if (i === bpActive || bpCompleted[i]) openStudyModal(i);
+                else showToast(`🔒 Сначала изучи текущий блок!`);
+            };
+            container.appendChild(div);
+            if (i < bpBlocks.length - 1) {
+                const arrow = document.createElement('div');
+                arrow.className = 'arrow-down';
+                arrow.innerHTML = '▼';
+                container.appendChild(arrow);
+            }
+        }
+        const completedCount = bpCompleted.filter(v => v === true).length;
+        const percent = (completedCount / bpBlocks.length) * 100;
+        const progressFill = document.getElementById('bpProgressFill');
+        if (progressFill) progressFill.style.width = percent + '%';
+    }
+
+    // ========== ТРЕК ОБУЧЕНИЯ ==========
+    function renderTrainingTrack() {
+        const trainingCompleted = isModuleCompleted('training');
+        const days = [
+            { day: 1, name: 'Велкам-бук + регистрация', done: true, hasBP: true },
+            { day: 2, name: 'Блок 1. Компания и принципы (тест)', done: false, hasBP: false },
+            { day: 3, name: 'Блок 2. Процессы и скрипты (тест)', done: false, hasBP: false },
+            { day: 4, name: 'Ролевые игры с наставником', done: false, hasBP: false },
+            { day: 5, name: 'Итоговый экзамен (90% для найма)', done: trainingCompleted, hasBP: false }
+        ];
+        let html = `<div class="track-container"><div class="track-title">📖 Трек обучения (5 дней)</div>`;
+        days.forEach(d => {
+            html += `<div class="track-step" data-day="${d.day}">
+                        <div class="step-check">${d.done ? '✅' : '⏳'}</div>
+                        <div class="step-name">День ${d.day}: ${d.name}</div>
+                        <div class="step-status ${d.done ? 'done' : 'pending'}">${d.done ? 'Пройден' : 'В процессе'}</div>
+                    </div>`;
+        });
+        if (!trainingCompleted) {
+            html += `<button class="btn-primary" id="completeTrainingBtn" style="margin-top: 20px;">🎯 Сдать экзамен (завершить обучение)</button>`;
+        }
+        html += `</div>`;
+        return html;
+    }
+
+    function attachDayHandlers() {
+        document.querySelectorAll('.track-step').forEach(step => {
+            step.onclick = () => {
+                const day = step.getAttribute('data-day');
+                if (day === '1') {
+                    // День 1: показываем бизнес-процесс
+                    document.getElementById('trackContent').innerHTML = `
+                        <div class="track-container">
+                            <div class="track-title">📋 День 1. Бизнес-процесс</div>
+                            <div class="progress-bar" style="margin:16px 0;"><div class="progress-fill" id="bpProgressFill" style="width:0%"></div></div>
+                            <div id="bpContainer" class="flowchart"></div>
+                            <button class="btn-back" id="backToDaysBtn" style="margin-top:20px;">← Назад к дням</button>
+                        </div>
+                    `;
+                    loadBPProgress();
+                    renderBP();
+                    document.getElementById('backToDaysBtn').onclick = () => {
+                        document.getElementById('trackContent').innerHTML = renderTrainingTrack();
+                        attachDayHandlers();
+                        const completeBtn = document.getElementById('completeTrainingBtn');
+                        if (completeBtn) completeBtn.onclick = () => {
+                            setModuleCompleted('training', true);
+                            document.getElementById('trackContent').innerHTML = renderTrainingTrack();
+                            attachDayHandlers();
+                        };
+                    };
+                } else {
+                    showToast(`🔜 День ${day} в разработке`);
+                }
+            };
+        });
+    }
+
+    function showModulesGrid() {
+        document.getElementById('trackContent').innerHTML = '';
+        document.getElementById('backToModulesBtn').style.display = 'none';
+        document.getElementById('modulesGrid').style.display = 'grid';
+    }
+
+    function showTraining() {
+        document.getElementById('modulesGrid').style.display = 'none';
+        document.getElementById('backToModulesBtn').style.display = 'inline-block';
+        document.getElementById('trackContent').innerHTML = renderTrainingTrack();
+        attachDayHandlers();
+        const completeBtn = document.getElementById('completeTrainingBtn');
+        if (completeBtn) completeBtn.onclick = () => {
+            setModuleCompleted('training', true);
+            document.getElementById('trackContent').innerHTML = renderTrainingTrack();
+            attachDayHandlers();
+        };
+    }
+
+    // ========== ПРОФИЛЬ И РЕГИСТРАЦИЯ ==========
+    function showProfileCard() {
+        const earnedCount = Object.values(achievements).filter(v => v === true).length;
+        const allCount = 3;
+        const superBonus = earnedCount === allCount ? '🏆 СУПЕРБОНУС: +10 000 ₽ к первой зарплате!' : 'Собери все ачивки → супербонус';
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content">
+            <h3>📇 Карточка сотрудника</h3>
+            <p><strong>${currentUser.name}</strong><br>📞 ${currentUser.phone}</p><hr>
+            <h4>🏅 Достижения</h4>
+            <div class="achievement-item ${achievements.exam5 ? 'badge-gold' : ''}">📖 Все экзамены на 5 баллов ${achievements.exam5 ? '✅ +3000 ₽' : '❌'}</div>
+            <div class="achievement-item ${achievements.cash40k ? 'badge-gold' : ''}">💰 Первые 40 тыс кассы в неделю ${achievements.cash40k ? '✅ +2000 ₽' : '❌'}</div>
+            <div class="achievement-item ${achievements.cash150k ? 'badge-gold' : ''}">🚀 Первые 150 тыс кассы в месяц ${achievements.cash150k ? '✅ +5000 ₽' : '❌'}</div>
+            <div style="margin:12px 0; font-weight:bold;">${superBonus}</div>
+            <h4>📊 Личные рекорды / победы</h4>
+            <p>🏆 Лучшая неделя: ${records.bestWeekCash || 0} ₽</p>
+            <p>🏅 Победы в конкурсах: ${records.contestWins || 0}</p>
+            <button class="btn-primary" id="closeModalBtn" style="margin-top:16px;">Закрыть</button>
+        </div>`;
+        document.body.appendChild(modal);
+        document.getElementById('closeModalBtn').onclick = () => modal.remove();
+    }
+
+    function initPortal(user) {
+        currentUser = user;
+        saveAll();
+        document.getElementById('registrationScreen').style.display = 'none';
+        document.getElementById('portalScreen').classList.remove('hidden');
+        document.getElementById('userNameBtn').innerText = user.name;
+        document.getElementById('welcomeName').innerText = user.name.split(' ')[0];
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.onclick = () => {
+                if (card.classList.contains('locked')) { alert('Модуль закрыт'); return; }
+                if (card.dataset.module === 'training') showTraining();
+            };
+        });
+        document.getElementById('backToModulesBtn').onclick = () => showModulesGrid();
+        document.getElementById('userNameBtn').onclick = () => showProfileCard();
+        showModulesGrid();
+        document.getElementById('posterChatLink').href = '#';
+        document.getElementById('sportChatLink').href = '#';
+        document.getElementById('salesChatLink').href = '#';
+    }
+
+    document.getElementById('registerBtn').onclick = () => {
+        const name = document.getElementById('regName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        if (!name || !phone) { alert('Заполни ФИО и телефон'); return; }
+        initPortal({ name, phone });
+    };
+    document.getElementById('resetBtn').onclick = () => { localStorage.clear(); location.reload(); };
+    const existing = localStorage.getItem('portalUser');
+    if (existing) { loadAll(); if (currentUser) initPortal(currentUser); }
+</script>
+</body>
+</html>
