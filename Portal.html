@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Портал стажёра | РАЗ! ГРУЗЧИКИ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .portal-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        .portal-header {
+            background: #0f172a;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .logo span { color: #22c55e; }
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .user-name-clickable {
+            background: #1e293b;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .user-name-clickable:hover {
+            background: #334155;
+        }
+        .reset-btn {
+            background: none;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            background: #334155;
+            color: white;
+        }
+        .portal-main {
+            padding: 32px;
+        }
+        .welcome-block {
+            background: #fef9e3;
+            border-left: 6px solid #eab308;
+            padding: 20px 24px;
+            border-radius: 20px;
+            margin-bottom: 36px;
+        }
+        .welcome-quote {
+            font-size: 18px;
+            font-weight: 500;
+            color: #854d0e;
+        }
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        .module-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e9eef3;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .module-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #f9fafb;
+        }
+        .module-card:not(.locked):hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 24px -8px rgba(0,0,0,0.12);
+        }
+        .module-icon { font-size: 40px; margin-bottom: 16px; }
+        .module-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .module-desc { font-size: 14px; color: #475569; margin-bottom: 16px; }
+        .module-status {
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            background: #eef2ff;
+            color: #1e40af;
+        }
+        .module-status.locked-status { background: #f1f5f9; color: #64748b; }
+        .btn-back {
+            background: none;
+            border: 1px solid #cbd5e1;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+        .btn-primary {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .track-container {
+            margin-top: 20px;
+            border-top: 1px solid #e9eef3;
+            padding-top: 24px;
+        }
+        .track-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .step-status.done { background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 20px; font-size: 13px; }
+        .step-status.pending { background: #f1f5f9; color: #64748b; padding: 4px 12px; border-radius: 20px; font-size: 13px; }
+        .reg-card {
+            background: white;
+            padding: 32px;
+            border-radius: 28px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .reg-card input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 60px;
+            font-size: 16px;
+        }
+        .hidden { display: none; }
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 28px;
+            padding: 28px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .achievement-item {
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .badge-gold { background: #fef3c7; color: #b45309; }
+        .chats-links {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e9eef3;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .chat-link {
+            background: #f1f5f9;
+            padding: 10px 24px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e293b;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chat-link:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+<div class="portal-container" id="app">
+    <div id="registrationScreen" style="padding: 32px;">
+        <div class="reg-card">
+            <h2>🎯 Доступ к порталу</h2>
+            <p style="margin-bottom: 20px;">Зарегистрируйся, чтобы начать путь</p>
+            <input type="text" id="regName" placeholder="ФИО">
+            <input type="tel" id="regPhone" placeholder="Телефон">
+            <button class="btn-primary" id="registerBtn" style="width: 100%;">Продолжить →</button>
+        </div>
+    </div>
+
+    <div id="portalScreen" class="hidden">
+        <div class="portal-header">
+            <div class="logo">РАЗ! <span>ГРУЗЧИКИ</span></div>
+            <div class="user-area">
+                <div class="user-name-clickable" id="userNameBtn"></div>
+                <button class="reset-btn" id="resetBtn">🔄 Сброс</button>
+            </div>
+        </div>
+        <div class="portal-main">
+            <div class="welcome-block">
+                <div class="welcome-quote">🌟 «Здесь растят чемпионов продаж» — добро пожаловать, <span id="welcomeName"></span>!</div>
+                <div style="margin-top: 10px; font-size: 14px;">Растем вместе → каждый этап приближает к цели</div>
+            </div>
+            <div id="navArea"><button class="btn-back" id="backToModulesBtn" style="display: none;">← Все модули</button></div>
+            <div id="modulesGrid" class="modules-grid">
+                <div class="module-card" data-module="training">
+                    <div class="module-icon">🎓</div>
+                    <div class="module-title">Обучение</div>
+                    <div class="module-desc">Блоки, тесты, экзамен — твой старт</div>
+                    <div class="module-status">✓ Доступ открыт</div>
+                </div>
+                <div class="module-card locked" data-module="simulator">
+                    <div class="module-icon">🎮</div>
+                    <div class="module-title">Тренажёры</div>
+                    <div class="module-desc">Интерактивные сценарии CRM</div>
+                    <div class="module-status locked-status">🔒 Закрыто</div>
+                </div>
+                <div class="module-card locked" data-module="adaptation">
+                    <div class="module-icon">⚙️</div>
+                    <div class="module-title">Адаптация</div>
+                    <div class="module-desc">Работа с наставником, план KPI</div>
+                    <div class="module-status locked-status">🔒 Закрыто</div>
+                </div>
+                <div class="module-card locked" data-module="cases">
+                    <div class="module-icon">📚</div>
+                    <div class="module-title">Кейсы</div>
+                    <div class="module-desc">Разбор реальных ситуаций</div>
+                    <div class="module-status locked-status">🔒 Закрыто</div>
+                </div>
+            </div>
+            <div id="trackContent"></div>
+            
+            <!-- ЧАТЫ — ВСЕ ССЫЛКИ ЗАГЛУШКИ, ВСТАВИТЕ СВОИ -->
+            <div class="chats-links">
+                <a href="#" target="_blank" class="chat-link" id="posterChatLink">
+                    📢 Афиша компании
+                </a>
+                <a href="#" target="_blank" class="chat-link" id="sportChatLink">
+                    ⚽ Чат спортивных мероприятий
+                </a>
+                <a href="#" target="_blank" class="chat-link" id="salesChatLink">
+                    💬 Чат отдела продаж
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let achievements = { exam5: false, cash40k: false, cash150k: false };
+    let records = { bestWeekCash: 0, contestWins: 0 };
+
+    function saveAll() {
+        localStorage.setItem('portalUser', JSON.stringify(currentUser));
+        localStorage.setItem('achievements', JSON.stringify(achievements));
+        localStorage.setItem('records', JSON.stringify(records));
+        localStorage.setItem('trainingCompleted', isModuleCompleted('training'));
+    }
+    function loadAll() {
+        const u = localStorage.getItem('portalUser');
+        if (u) currentUser = JSON.parse(u);
+        const a = localStorage.getItem('achievements');
+        if (a) achievements = JSON.parse(a);
+        const r = localStorage.getItem('records');
+        if (r) records = JSON.parse(r);
+    }
+    function isModuleCompleted(moduleKey) {
+        return localStorage.getItem(`completed_${moduleKey}`) === 'true';
+    }
+    function setModuleCompleted(moduleKey, val) {
+        localStorage.setItem(`completed_${moduleKey}`, val);
+    }
+    function renderModulesLockStatus() {
+        const trainingDone = isModuleCompleted('training');
+        const simCard = document.querySelector('.module-card[data-module="simulator"]');
+        if (trainingDone && simCard) {
+            simCard.classList.remove('locked');
+            simCard.querySelector('.module-status').innerHTML = '🔓 Доступ открыт';
+            simCard.querySelector('.module-status').classList.remove('locked-status');
+        } else if (simCard && !trainingDone) {
+            simCard.classList.add('locked');
+            simCard.querySelector('.module-status').innerHTML = '🔒 Закрыто';
+        }
+    }
+
+    function renderTrainingTrack() {
+        const days = [
+            { day: 1, name: 'Велкам-бук + регистрация', done: true },
+            { day: 2, name: 'Блок 1. Компания и принципы (тест)', done: true },
+            { day: 3, name: 'Блок 2. Процессы и скрипты (тест)', done: false },
+            { day: 4, name: 'Ролевые игры с наставником', done: false },
+            { day: 5, name: 'Итоговый экзамен (90% для найма)', done: isModuleCompleted('training') }
+        ];
+        let html = `<div class="track-container"><div class="track-title">📖 Трек обучения (5 дней)</div>`;
+        days.forEach(d => {
+            html += `<div class="track-step">
+                        <div class="step-check">${d.done ? '✅' : '⏳'}</div>
+                        <div class="step-name">День ${d.day}: ${d.name}</div>
+                        <div class="step-status ${d.done ? 'done' : 'pending'}">${d.done ? 'Пройден' : 'В процессе'}</div>
+                    </div>`;
+        });
+        if (!isModuleCompleted('training')) {
+            html += `<button class="btn-primary" id="completeTrainingBtn" style="margin-top: 20px;">🎯 Сдать экзамен (завершить обучение)</button>`;
+        }
+        html += `<div style="margin-top: 20px; padding: 12px; background:#eef2ff; border-radius: 16px;">📌 После сдачи экзамена откроются тренажёры</div></div>`;
+        return html;
+    }
+
+    function showProfileCard() {
+        const earnedCount = Object.values(achievements).filter(v => v === true).length;
+        const allCount = 3;
+        const superBonus = earnedCount === allCount ? '🏆 СУПЕРБОНУС: +10 000 ₽ к первой зарплате!' : 'Собери все ачивки → супербонус';
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>📇 Карточка сотрудника</h3>
+                <p><strong>${currentUser.name}</strong><br>📞 ${currentUser.phone}</p>
+                <hr>
+                <h4>🏅 Достижения</h4>
+                <div class="achievement-item ${achievements.exam5 ? 'badge-gold' : ''}">📖 Все экзамены на 5 баллов ${achievements.exam5 ? '✅ +3000 ₽' : '❌'}</div>
+                <div class="achievement-item ${achievements.cash40k ? 'badge-gold' : ''}">💰 Первые 40 тыс кассы в неделю ${achievements.cash40k ? '✅ +2000 ₽' : '❌'}</div>
+                <div class="achievement-item ${achievements.cash150k ? 'badge-gold' : ''}">🚀 Первые 150 тыс кассы в месяц ${achievements.cash150k ? '✅ +5000 ₽' : '❌'}</div>
+                <div style="margin: 12px 0; font-weight: bold;">${superBonus}</div>
+                <h4>📊 Личные рекорды / победы</h4>
+                <p>🏆 Лучшая неделя: ${records.bestWeekCash || 0} ₽</p>
+                <p>🏅 Победы в конкурсах: ${records.contestWins || 0}</p>
+                <button class="btn-primary" id="closeModalBtn" style="margin-top: 16px;">Закрыть</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('closeModalBtn').onclick = () => modal.remove();
+    }
+
+    let currentModule = null;
+    function renderModule(moduleId) {
+        const container = document.getElementById('trackContent');
+        const backBtn = document.getElementById('backToModulesBtn');
+        if (moduleId === 'training') {
+            container.innerHTML = renderTrainingTrack();
+            backBtn.style.display = 'inline-block';
+            const completeBtn = document.getElementById('completeTrainingBtn');
+            if (completeBtn) {
+                completeBtn.onclick = () => {
+                    setModuleCompleted('training', true);
+                    renderModule('training');
+                    renderModulesLockStatus();
+                };
+            }
+        } else {
+            container.innerHTML = `<div class="track-container"><div class="track-title">🔜 Скоро</div><p>Модуль откроется после обучения</p></div>`;
+            backBtn.style.display = 'inline-block';
+        }
+    }
+
+    function showModulesGrid() {
+        document.getElementById('trackContent').innerHTML = '';
+        document.getElementById('backToModulesBtn').style.display = 'none';
+        currentModule = null;
+    }
+
+    function initPortal(user) {
+        currentUser = user;
+        saveAll();
+        document.getElementById('registrationScreen').style.display = 'none';
+        document.getElementById('portalScreen').classList.remove('hidden');
+        document.getElementById('userNameBtn').innerText = user.name;
+        document.getElementById('welcomeName').innerText = user.name.split(' ')[0];
+        renderModulesLockStatus();
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.onclick = () => {
+                if (card.classList.contains('locked')) { alert('Модуль закрыт. Пройдите обучение.'); return; }
+                const mod = card.dataset.module;
+                if (mod === 'training') { renderModule('training'); }
+                else { renderModule(mod); }
+            };
+        });
+        document.getElementById('backToModulesBtn').onclick = () => showModulesGrid();
+        document.getElementById('userNameBtn').onclick = () => showProfileCard();
+        showModulesGrid();
+
+        // ССЫЛКИ НА ЧАТЫ — ЗДЕСЬ ВСТАВЛЯЙТЕ РЕАЛЬНЫЕ ССЫЛКИ
+        document.getElementById('posterChatLink').href = '#';   // сюда вашу ссылку на афишу
+        document.getElementById('sportChatLink').href = '#';    // сюда ссылку на спорт
+        document.getElementById('salesChatLink').href = '#';    // сюда ссылку на отдел продаж
+    }
+
+    document.getElementById('registerBtn').onclick = () => {
+        const name = document.getElementById('regName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        if (!name || !phone) { alert('Заполни ФИО и телефон'); return; }
+        loadAll();
+        initPortal({ name, phone });
+    };
+    document.getElementById('resetBtn').onclick = () => {
+        localStorage.clear();
+        location.reload();
+    };
+    const existing = localStorage.getItem('portalUser');
+    if (existing) { loadAll(); if (currentUser) initPortal(currentUser); }
+</script>
+</body>
+</html>
