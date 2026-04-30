@@ -1,5 +1,22 @@
+// ========== training/exam.js - исправленная версия ==========
 import { bpBlocks } from './blocks.js';
-import { trainingCompleted, trainingGrades, saveTrainingProgress, updateTrainingUnlockedBlocks, renderTrainingModule, showToast } from './training.js';
+import { trainingCompleted, trainingGrades, saveTrainingProgress, updateTrainingUnlockedBlocks, showToast } from './training.js';
+
+// Функция для обновления интерфейса (без прямого импорта)
+function refreshTrainingUI() {
+    if (typeof window.renderTrainingModule === 'function') {
+        window.renderTrainingModule();
+    } else {
+        // Пробуем импортировать динамически
+        import('./ui.js').then(module => {
+            window.renderTrainingModule = module.renderTrainingModule;
+            module.renderTrainingModule();
+        }).catch(() => {
+            // fallback: перезагружаем страницу
+            location.reload();
+        });
+    }
+}
 
 export function openExamModal(blockIdx) {
     const block = bpBlocks[blockIdx];
@@ -9,7 +26,7 @@ export function openExamModal(blockIdx) {
         trainingGrades[blockIdx] = 5;
         saveTrainingProgress();
         updateTrainingUnlockedBlocks();
-        renderTrainingModule();
+        refreshTrainingUI();
         showToast(`✅ Блок "${block.title}" пройден!`);
         return;
     }
@@ -37,7 +54,7 @@ export function openExamModal(blockIdx) {
             saveTrainingProgress();
             modal.remove();
             updateTrainingUnlockedBlocks();
-            renderTrainingModule();
+            refreshTrainingUI();
             showToast("🎉 Поздравляем! Вы завершили обучение!");
         };
         return;
@@ -77,7 +94,7 @@ export function openExamModal(blockIdx) {
             saveTrainingProgress();
             modal.remove();
             updateTrainingUnlockedBlocks();
-            renderTrainingModule();
+            refreshTrainingUI();
             showToast(`✅ Экзамен сдан на 5! Следующий блок открыт.`);
         } else {
             modal.querySelector('#examResult').innerHTML = `<div style="background:#fee2e2; padding:12px; border-radius:16px;">❌ Оценка: ${correct}/5. Нужно 5 правильных ответов.</div>`;
@@ -111,7 +128,7 @@ export function openStudyModal(blockIdx) {
             trainingGrades[blockIdx] = 5;
             saveTrainingProgress();
             updateTrainingUnlockedBlocks();
-            renderTrainingModule();
+            refreshTrainingUI();
             modal.remove();
             showToast("✅ Блок пройден!");
         };
@@ -178,16 +195,18 @@ export function openStudyModal(blockIdx) {
         const trainerBtn = modal.querySelector('#trainerBtn');
         if (trainerBtn) {
             trainerBtn.onclick = () => {
-                if (blockIdx === 0) openTrainerBlock0(modal);
-                else if (blockIdx === 2) openTrainerBlock2(modal);
-                else if (blockIdx === 3) openTrainerBlock3(modal);
-                else {
-                    bpBlocks[blockIdx].trainerPassed = true;
-                    saveTrainingProgress();
-                    modal.remove();
-                    showToast("Тренажёр пройден!");
-                    openExamModal(blockIdx);
-                }
+                import('./trainer-block0.js').then(module => {
+                    if (blockIdx === 0) module.openTrainerBlock0(modal);
+                    else if (blockIdx === 2) import('./trainer-block2.js').then(m => m.openTrainerBlock2(modal));
+                    else if (blockIdx === 3) import('./trainer-block3.js').then(m => m.openTrainerBlock3(modal));
+                    else {
+                        bpBlocks[blockIdx].trainerPassed = true;
+                        saveTrainingProgress();
+                        modal.remove();
+                        showToast("Тренажёр пройден!");
+                        openExamModal(blockIdx);
+                    }
+                });
             };
         }
     }
