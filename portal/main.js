@@ -25,7 +25,7 @@ function renderModulesGrid() {
     const grid = document.getElementById('modulesGrid');
     if (!grid) return;
     
-    // 👇 ВРЕМЕННО ДЛЯ ТЕСТА: адаптация открыта для всех
+    // ВРЕМЕННО ДЛЯ ТЕСТА: адаптация открыта для всех
     const adaptationAvailable = true;
     
     const adaptationBadge = adaptationAvailable 
@@ -33,6 +33,12 @@ function renderModulesGrid() {
         : '<span class="module-status locked-status">🔒 Закрыт</span>';
     
     grid.innerHTML = `
+        <div class="module-card" data-module="crm">
+            <div class="module-icon">🏢</div>
+            <div class="module-title">Функционал CRM</div>
+            <div class="module-desc">Звонки, заявки, рейтинг, база исполнителя</div>
+            <div class="module-status">✓ Доступен</div>
+        </div>
         <div class="module-card" data-module="training">
             <div class="module-icon">🎓</div>
             <div class="module-title">Обучение</div>
@@ -44,12 +50,6 @@ function renderModulesGrid() {
             <div class="module-title">Адаптация</div>
             <div class="module-desc">Работа с наставником, план KPI</div>
             ${adaptationBadge}
-        </div>
-        <div class="module-card locked" data-module="crm">
-            <div class="module-icon">🎮</div>
-            <div class="module-title">Тестовая CRM</div>
-            <div class="module-desc">Скоро</div>
-            <div class="module-status locked-status">🔒 Закрыто</div>
         </div>
         <div class="module-card" data-module="knowledge">
             <div class="module-icon">📚</div>
@@ -77,6 +77,12 @@ function renderModulesGrid() {
                 } else {
                     showToast('Модуль загружается...');
                 }
+            } else if (module === 'crm') {
+                if (typeof showCRM === 'function') {
+                    showCRM();
+                } else {
+                    showToast('Модуль CRM загружается...');
+                }
             }
         };
     });
@@ -95,7 +101,7 @@ function showModulesGrid() {
 function showProfileCard() {
     if (!currentUser) return;
     
-    let stats = { completedCount: 0, total: 6, avgGrade: 0 };
+    let stats = { completedCount: 0, total: 7, avgGrade: 0 };
     try {
         stats = calculateTrainingStats();
     } catch(e) {
@@ -181,7 +187,6 @@ function resetUserProgress() {
     if (currentUser && !isAdminMode) {
         if (confirm('Сбросить весь прогресс обучения?')) {
             localStorage.removeItem(`training_${currentUser.phone}`);
-            // Сбрасываем переменные, если они доступны
             if (typeof trainingCompleted !== 'undefined') {
                 for (let i = 0; i < trainingCompleted.length; i++) {
                     trainingCompleted[i] = false;
@@ -204,7 +209,6 @@ function resetUserProgress() {
 
 // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
 document.addEventListener('DOMContentLoaded', () => {
-    // Кнопка регистрации
     const registerBtn = document.getElementById('registerBtn');
     if (registerBtn) {
         registerBtn.onclick = async () => {
@@ -226,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     
-    // Кнопка входа в админку
     const adminLoginBtn = document.getElementById('adminLoginBtn');
     if (adminLoginBtn) {
         adminLoginBtn.onclick = async () => {
@@ -237,13 +240,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentUser = null;
                 window.currentUser = null;
                 
-                // Скрываем регистрацию, показываем портал
                 const registrationScreen = document.getElementById('registrationScreen');
                 const portalScreen = document.getElementById('portalScreen');
                 if (registrationScreen) registrationScreen.style.display = 'none';
                 if (portalScreen) portalScreen.classList.remove('hidden');
                 
-                // Скрываем модули и кнопку "Назад"
                 const modulesGrid = document.getElementById('modulesGrid');
                 const backBtn = document.getElementById('backToModulesBtn');
                 const trackContent = document.getElementById('trackContent');
@@ -251,11 +252,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (backBtn) backBtn.style.display = 'none';
                 if (trackContent) trackContent.innerHTML = '';
                 
-                // Показываем админ-панель
                 const adminPanel = document.getElementById('adminPanel');
                 if (adminPanel) adminPanel.classList.remove('hidden');
                 
-                // Загружаем админ-панель
                 try {
                     if (typeof loadAdminPanel === 'function') {
                         await loadAdminPanel();
@@ -274,21 +273,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     
-    // Кнопка сброса
     const resetBtn = document.getElementById('resetBtn');
     if (resetBtn) {
         resetBtn.onclick = () => resetUserProgress();
     }
 });
 
-// ========== АВТОВХОД ДЛЯ ПРОВЕРКИ ==========
-// Проверяем сохранённого пользователя
+// ========== АВТОВХОД ==========
 const savedUser = localStorage.getItem('portalUser');
 if (savedUser) {
     try {
         const user = JSON.parse(savedUser);
         if (user && user.name && user.phone) {
-            // Автоматически входим, если есть сохранённый пользователь
             setTimeout(() => {
                 initPortal(user).catch(e => console.error('Автовход не удался:', e));
             }, 100);
@@ -298,7 +294,6 @@ if (savedUser) {
     }
 }
 
-// Делаем необходимые функции глобальными для доступа из других модулей
 window.showModulesGrid = showModulesGrid;
 window.renderModulesGrid = renderModulesGrid;
 window.showProfileCard = showProfileCard;
