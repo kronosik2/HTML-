@@ -114,3 +114,5 @@ export function showTraining() {
 
 // Экспортируем функцию для main.js
 export { loadTrainingProgress };
+// Делаем функцию глобальной для доступа из exam.js
+window.renderTrainingModule = renderTrainingModule;
