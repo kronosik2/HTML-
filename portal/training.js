@@ -1,6 +1,6 @@
-// ========== training.js - Модуль Обучения (финальная версия) ==========
+// ========== training.js - Модуль Обучения (7 блоков, включая Ценообразование) ==========
 
-// Данные 6 блоков обучения
+// Данные 7 блоков обучения
 const bpBlocks = [
     { id: 0, title: "📞 Приём обращения", desc: "Звонок / заявка с сайта / мессенджер", isUnlocked: true,
       goal: "Обработать обращение мгновенно! Шанс продажи увеличивается в 2 раза, если ответить в течение 10 секунд.",
@@ -15,7 +15,15 @@ const bpBlocks = [
           { text: "Кто является лицом компании во время звонка?", options: ["Директор", "Менеджер по продажам", "Бухгалтер"], correct: 1 },
           { text: "Что нужно сделать сразу после приветствия?", options: ["Положить трубку", "Понять потребность клиента", "Назвать цену"], correct: 1 }
       ] },
-    { id: 1, title: "📝 Составление заявки", desc: "Фиксируем адрес, объём, дату, цену", isUnlocked: false,
+    { id: 1, title: "💰 Ценообразование", desc: "Как формировать цену и не терять прибыль", isUnlocked: false,
+      goal: "Научиться правильно рассчитывать стоимость услуг.",
+      mandatory: "Учитывать все затраты и не демпинговать.",
+      result: "Прозрачная и выгодная цена для компании и клиента.",
+      tools: "Калькулятор стоимости + CRM",
+      audio: null, hasTrainer: false, trainerPassed: false, grade: 0, completed: false,
+      simpleComplete: true,  // специальный флаг для простого прохождения
+      questions: [] },
+    { id: 2, title: "📝 Составление заявки", desc: "Фиксируем адрес, объём, дату, цену", isUnlocked: false,
       goal: "Оформить заявку верно, без ошибок.",
       mandatory: "Обязательно уточняй детали по работам. Нужно верно передать информацию исполнителям!",
       result: "Оформленная заявка (правильное описание, верный адрес, нужное время!)",
@@ -28,7 +36,7 @@ const bpBlocks = [
           { text: "Какой инструмент помогает оформлять заявки?", options: ["Excel", "CRM", "Блокнот"], correct: 1 },
           { text: "Что важно указать в заявке помимо адреса?", options: ["Дату и время", "Цвет машины грузчика", "Опыт грузчика"], correct: 0 }
       ] },
-    { id: 2, title: "👥 Назначение исполнителя", desc: "Грузчики / водители / техника", isUnlocked: false,
+    { id: 3, title: "👥 Назначение исполнителя", desc: "Грузчики / водители / техника", isUnlocked: false,
       goal: "Подобрать подходящих исполнителей под задачу.",
       mandatory: "Учитывай рейтинг исполнителей (количество заказов, % выполненных). % менее 75% — риск срыва.",
       result: "Назначенные исполнители, подтвердившие выход.",
@@ -41,7 +49,7 @@ const bpBlocks = [
           { text: "Какой инструмент помогает видеть рейтинг исполнителей?", options: ["Excel", "CRM", "Блокнот"], correct: 1 },
           { text: "Что из перечисленного НЕ влияет на выбор исполнителя?", options: ["Процент выполненных заказов", "Цвет машины", "Количество взятых заказов"], correct: 1 }
       ] },
-    { id: 3, title: "⏱️ Контроль / техподдержка", desc: "Следим за приездом, решаем проблемы", isUnlocked: false,
+    { id: 4, title: "⏱️ Контроль / техподдержка", desc: "Следим за приездом, решаем проблемы", isUnlocked: false,
       goal: "Обеспечить бесперебойное выполнение заявки и оперативно решать проблемы.",
       mandatory: "Контролируй прибытие исполнителей, будь на связи с клиентом и бригадой.",
       result: "Заявка выполнена без сбоев, клиент доволен сервисом.",
@@ -54,7 +62,7 @@ const bpBlocks = [
           { text: "Какой документ подтверждает выполнение работ?", options: ["Акт выполненных работ", "Договор оферты", "Счёт на оплату"], correct: 0 },
           { text: "Что важно сделать после завершения работ?", options: ["Позвонить клиенту и получить обратную связь", "Сразу выставить счёт", "Забыть про заявку"], correct: 0 }
       ] },
-    { id: 4, title: "💰 Получение оплаты", desc: "Деньги от клиента → расчёт с грузчиками", isUnlocked: false,
+    { id: 5, title: "💰 Получение оплаты", desc: "Деньги от клиента → расчёт с грузчиками", isUnlocked: false,
       goal: "Закрыть финансовый вопрос чисто и быстро.",
       mandatory: "Проверь сумму. При оплате наличными — выдай чек.",
       result: "Деньги получены, грузчики рассчитаны, заявка закрыта.",
@@ -67,17 +75,19 @@ const bpBlocks = [
           { text: "Какой документ фиксирует факт оплаты?", options: ["Кассовый чек или квитанция", "Договор", "Акт выполненных работ"], correct: 0 },
           { text: "После получения оплаты нужно:", options: ["Рассчитать исполнителей и закрыть заявку", "Ждать следующего заказа", "Сообщить клиенту об успехе"], correct: 0 }
       ] },
-    { id: 5, title: "🏆 ЗАЯВКА ЗАКРЫТА", desc: "Результат достигнут, клиент доволен", isFinal: true, isUnlocked: false, completed: false, grade: 0,
+    { id: 6, title: "🏆 ЗАЯВКА ЗАКРЫТА", desc: "Результат достигнут, клиент доволен", isFinal: true, isUnlocked: false, completed: false, grade: 0,
       finalMessage: true,
       questions: [
           { text: "Хочешь работать у нас?", options: ["да", "конечно", "100%"], correct: 0 }
       ] }
 ];
 
-// Состояние обучения
-let trainingCompleted = [false, false, false, false, false, false];
-let trainingGrades = [0, 0, 0, 0, 0, 0];
+// Состояние обучения (теперь 7 блоков)
+let trainingCompleted = [false, false, false, false, false, false, false];
+let trainingGrades = [0, 0, 0, 0, 0, 0, 0];
 let cheatModeEnabled = false;
+let entranceExamStatus = null;
+let entranceExamAnswer = '';
 
 const SCRIPT_URL = "https://docs.google.com/document/d/1ySNWcceQLIDYIEs0VgaG6-8cVLgc4oRoMIFR8ZXOgjM/edit?usp=sharing";
 
@@ -86,8 +96,7 @@ function updateTrainingUnlockedBlocks() {
     for (let i = 0; i < bpBlocks.length; i++) {
         if (i === 0) {
             bpBlocks[i].isUnlocked = true;
-        } else if (i === bpBlocks.length - 1) {
-            // Финальный блок (последний) открывается только если ВСЕ предыдущие блоки сданы на 5
+        } else if (bpBlocks[i].isFinal) {
             let allPreviousCompleted = true;
             for (let j = 0; j < bpBlocks.length - 1; j++) {
                 if (trainingGrades[j] !== 5 || !trainingCompleted[j]) {
@@ -97,7 +106,6 @@ function updateTrainingUnlockedBlocks() {
             }
             bpBlocks[i].isUnlocked = allPreviousCompleted;
         } else {
-            // Обычные блоки: открываются если предыдущий сдан на 5
             if (trainingGrades[i-1] === 5 && trainingCompleted[i-1]) {
                 bpBlocks[i].isUnlocked = true;
             } else {
@@ -129,8 +137,8 @@ function saveTrainingProgress() {
             window.currentUser.phone,
             stats.completedCount,
             stats.avgGrade,
-            window.currentUser?.exam_status || 'none',
-            window.currentUser?.exam_comment || '',
+            entranceExamStatus || 'none',
+            entranceExamAnswer || '',
             window.currentUser?.accepted || false,
             window.currentUser?.accepted_date || ''
         );
@@ -142,15 +150,98 @@ function loadTrainingProgress() {
     const saved = localStorage.getItem(`training_${window.currentUser.phone}`);
     if (saved) {
         const data = JSON.parse(saved);
-        trainingCompleted = data.completed || [false, false, false, false, false, false];
-        trainingGrades = data.grades || [0, 0, 0, 0, 0, 0];
+        trainingCompleted = data.completed || [false, false, false, false, false, false, false];
+        trainingGrades = data.grades || [0, 0, 0, 0, 0, 0, 0];
         if (data.trainerPassed) {
             for (let i = 0; i < bpBlocks.length; i++) {
                 if (bpBlocks[i].hasTrainer) bpBlocks[i].trainerPassed = data.trainerPassed[i] || false;
             }
         }
     }
+    const savedExam = localStorage.getItem(`entranceExam_${window.currentUser.phone}`);
+    if (savedExam) {
+        const exam = JSON.parse(savedExam);
+        entranceExamStatus = exam.status;
+        entranceExamAnswer = exam.answer || '';
+    } else {
+        entranceExamStatus = null;
+        entranceExamAnswer = '';
+    }
     updateTrainingUnlockedBlocks();
+}
+
+function saveEntranceExamAnswer(answer) {
+    entranceExamAnswer = answer;
+    const stats = calculateTrainingStats();
+    if (stats.completedCount === stats.total) {
+        saveTrainingProgress();
+    }
+    localStorage.setItem(`entranceExam_${window.currentUser.phone}`, JSON.stringify({ status: entranceExamStatus, answer: entranceExamAnswer }));
+}
+
+function submitEntranceExamForReview(answer) {
+    entranceExamAnswer = answer;
+    entranceExamStatus = 'pending';
+    saveTrainingProgress();
+    localStorage.setItem(`entranceExam_${window.currentUser.phone}`, JSON.stringify({ status: entranceExamStatus, answer: entranceExamAnswer }));
+}
+
+// ========== ВСТУПИТЕЛЬНЫЙ ЭКЗАМЕН ==========
+function openEntranceExamModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:700px; width:100%;">
+            <h2 style="margin-bottom:20px;">🎓 Вступительный экзамен</h2>
+            <div style="background:#fef9e3; border-radius:16px; padding:20px; margin-bottom:20px;">
+                <p style="font-size:16px; margin-bottom:16px;"><strong>📋 Ситуация:</strong></p>
+                <p style="margin-bottom:16px;">Клиент звонит и говорит: «Мне нужно перевезти пианино из квартиры на первом этаже в другую квартиру тоже на первом этаже. Расстояние 5 км. У вас цена 5000 рублей, а в другой фирме мне назвали 3500. Почему у вас дороже?»</p>
+                <p style="font-weight:600; margin-bottom:12px;">❓ Вопрос:</p>
+                <p>Опишите, как вы ответите клиенту, чтобы аргументировать цену и не потерять заявку.</p>
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="font-weight:600; display:block; margin-bottom:8px;">✏️ Ваш ответ:</label>
+                <textarea id="examAnswer" rows="6" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:16px; font-size:14px;" placeholder="Опишите свои действия и аргументы...">${entranceExamAnswer || ''}</textarea>
+            </div>
+            <div style="display:flex; gap:12px; justify-content:flex-end;">
+                <button id="submitExamBtn" class="btn-success" style="padding:12px 24px;">📨 Отправить на проверку</button>
+                <button id="closeExamBtn" class="btn-outline">Закрыть</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.querySelector('#submitExamBtn').onclick = () => {
+        const answer = modal.querySelector('#examAnswer').value.trim();
+        if (!answer) {
+            showToast("⚠️ Пожалуйста, напишите ответ перед отправкой");
+            return;
+        }
+        submitEntranceExamForReview(answer);
+        modal.remove();
+        showToast("📨 Экзамен отправлен на проверку администратору!");
+        renderTrainingModule();
+    };
+    modal.querySelector('#closeExamBtn').onclick = () => modal.remove();
+}
+
+function getEntranceExamButtonHtml() {
+    const stats = calculateTrainingStats();
+    const allCompleted = stats.completedCount === stats.total;
+    
+    if (!allCompleted) {
+        return '<div style="margin-top:20px; padding:16px; background:#f1f5f9; border-radius:16px; text-align:center; color:#64748b;">🎯 Сначала пройдите все блоки обучения</div>';
+    }
+    
+    if (entranceExamStatus === 'accepted') {
+        return '<div style="margin-top:20px; padding:16px; background:#dcfce7; border-radius:16px; text-align:center; color:#15803d;">✅ Вступительный экзамен: ПРИНЯТ! Вы можете переходить к адаптации.</div>';
+    } else if (entranceExamStatus === 'rejected') {
+        return '<div style="margin-top:20px; padding:16px; background:#fee2e2; border-radius:16px; text-align:center; color:#b91c1c;">❌ Вступительный экзамен: НЕ ПРИНЯТ. Попробуйте ещё раз.</div>';
+    } else if (entranceExamStatus === 'pending') {
+        return '<div style="margin-top:20px; padding:16px; background:#fef9e3; border-radius:16px; text-align:center;">⏳ Вступительный экзамен на проверке. Ожидайте решения администратора.</div>';
+    }
+    
+    return `<button id="entranceExamBtn" class="btn-primary" style="margin-top:20px; width:100%; padding:14px; font-size:16px;">🎓 Пройти вступительный экзамен</button>`;
 }
 
 function showToast(msg) {
@@ -193,7 +284,7 @@ function openTrainerBlock0(modalToClose) {
     modal.querySelector('#closeTrainerBtn').onclick = () => modal.remove();
 }
 
-function openTrainerBlock1(modalToClose) {
+function openTrainerBlock2(modalToClose) {  // теперь блок 2 (Составление заявки)
     const modal = document.createElement('div'); modal.className = 'modal';
     let fieldsDone = { city: false, name: false, work: false, price: false, address: false, datetime: false };
     function checkAllDone() {
@@ -228,18 +319,18 @@ function openTrainerBlock1(modalToClose) {
     });
     modal.querySelector('#completeTrainerBtn').onclick = () => {
         if (Object.values(fieldsDone).every(v=>v===true)) {
-            bpBlocks[1].trainerPassed = true;
+            bpBlocks[2].trainerPassed = true;
             saveTrainingProgress();
             modal.remove();
             if (modalToClose) modalToClose.remove();
             showToast("🎉 Тренажёр пройден! Теперь доступен экзамен.");
-            openExamModal(1);
+            openExamModal(2);
         }
     };
     modal.querySelector('#closeTrainerBtn').onclick = () => modal.remove();
 }
 
-function openTrainerBlock2(modalToClose) {
+function openTrainerBlock3(modalToClose) {  // блок 3 (Назначение исполнителя)
     const workers = [
         { id: 1, name: "Сергей", egu: "Еду 1", people: 1, taken: 30, done: 21, percent: 70 },
         { id: 2, name: "Антон", egu: "Еду 1", people: 1, taken: 22, done: 15, percent: 68 },
@@ -283,23 +374,34 @@ function openTrainerBlock2(modalToClose) {
     document.body.appendChild(modal);
     renderList(); updateComplete();
     modal.querySelector('#completeTrainerBtn').onclick = () => {
-        bpBlocks[2].trainerPassed = true;
+        bpBlocks[3].trainerPassed = true;
         saveTrainingProgress();
         modal.remove();
         if (modalToClose) modalToClose.remove();
         showToast("🎉 Тренажёр пройден! Теперь доступен экзамен.");
-        openExamModal(2);
+        openExamModal(3);
     };
     modal.querySelector('#closeTrainerBtn').onclick = () => modal.remove();
 }
 
-// ========== ЭКЗАМЕН С АВТООБНОВЛЕНИЕМ ==========
+// ========== ЭКЗАМЕН ==========
 function openExamModal(blockIdx) {
     const block = bpBlocks[blockIdx];
+    
+    // Если блок с простым прохождением (Ценообразование)
+    if (block.simpleComplete) {
+        trainingCompleted[blockIdx] = true;
+        trainingGrades[blockIdx] = 5;
+        saveTrainingProgress();
+        updateTrainingUnlockedBlocks();
+        renderTrainingModule();
+        showToast(`✅ Блок "${block.title}" пройден!`);
+        return;
+    }
+    
     const modal = document.createElement('div');
     modal.className = 'modal';
     
-    // Финальный блок с поздравлением
     if (block.finalMessage) {
         modal.innerHTML = `<div class="modal-content" style="text-align:center;">
             <h1 style="font-size:48px; color:#22c55e;">🏆</h1>
@@ -326,7 +428,6 @@ function openExamModal(blockIdx) {
         return;
     }
     
-    // Обычный экзамен
     let qHtml = '';
     if (block.questions) {
         block.questions.forEach((q, idx) => {
@@ -364,7 +465,7 @@ function openExamModal(blockIdx) {
             renderTrainingModule();
             showToast(`✅ Экзамен сдан на 5! Следующий блок открыт.`);
         } else {
-            modal.querySelector('#examResult').innerHTML = `<div style="background:#fee2e2; padding:12px; border-radius:16px;">❌ Оценка: ${correct}/5. Нужно 5 правильных ответов для перехода к следующему блоку.</div>`;
+            modal.querySelector('#examResult').innerHTML = `<div style="background:#fee2e2; padding:12px; border-radius:16px;">❌ Оценка: ${correct}/5. Нужно 5 правильных ответов.</div>`;
         }
     };
     modal.querySelector('#closeBtn').onclick = () => modal.remove();
@@ -373,9 +474,34 @@ function openExamModal(blockIdx) {
 function openStudyModal(blockIdx) {
     const block = bpBlocks[blockIdx];
     
-    // Финальный блок — сразу открываем поздравление
     if (block.finalMessage) {
         openExamModal(blockIdx);
+        return;
+    }
+    
+    // Простое прохождение для Ценообразования
+    if (block.simpleComplete && !trainingCompleted[blockIdx]) {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="text-align:center;">
+                <h2>💰 Ценообразование</h2>
+                <p style="margin:20px 0;">Здесь будет видео-обучение по ценообразованию.</p>
+                <button id="completeSimpleBtn" class="btn-success">✅ Пройдено</button>
+                <button class="btn-outline" id="closeBtn" style="margin-top:12px;">Закрыть</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.querySelector('#completeSimpleBtn').onclick = () => {
+            trainingCompleted[blockIdx] = true;
+            trainingGrades[blockIdx] = 5;
+            saveTrainingProgress();
+            updateTrainingUnlockedBlocks();
+            renderTrainingModule();
+            modal.remove();
+            showToast("✅ Блок пройден!");
+        };
+        modal.querySelector('#closeBtn').onclick = () => modal.remove();
         return;
     }
     
@@ -384,7 +510,6 @@ function openStudyModal(blockIdx) {
         return;
     }
     
-    // Если блок уже пройден — показываем сообщение и не даём сдавать экзамен заново
     const isAlreadyCompleted = trainingCompleted[blockIdx];
     
     const modal = document.createElement('div');
@@ -393,7 +518,9 @@ function openStudyModal(blockIdx) {
     
     let trainerBtnHtml = '';
     if (block.hasTrainer && !block.trainerPassed && !isAlreadyCompleted) {
-        trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
+        if (blockIdx === 0) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
+        else if (blockIdx === 2) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
+        else if (blockIdx === 3) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
     } else if (block.hasTrainer && (block.trainerPassed || isAlreadyCompleted)) {
         trainerBtnHtml = '<span class="badge-success" style="display:inline-block; padding:8px 16px;">✅ Тренажёр пройден</span>';
     }
@@ -410,28 +537,22 @@ function openStudyModal(blockIdx) {
     modal.innerHTML = `
     <div class="modal-content" style="max-width:600px; width:100%;">
         <h3 style="margin-bottom:20px;">${block.title}</h3>
-        
         <div class="material-section" style="background:#fef9e3; margin-bottom:16px;">
             <div><strong>🎯 ЦЕЛЬ:</strong> ${block.goal}</div>
             <div style="margin-top:8px;"><strong>⚠️ ОБЯЗАТЕЛЬНО:</strong> ${block.mandatory}</div>
             <div style="margin-top:8px;"><strong>✅ РЕЗУЛЬТАТ:</strong> ${block.result}</div>
             <div style="margin-top:8px;"><strong>🛠️ ИНСТРУМЕНТЫ:</strong> ${block.tools}</div>
         </div>
-        
         <div class="material-section" style="margin-bottom:16px;">
             <h4>🎧 Аудио</h4>
             ${audioHtml}
         </div>
-        
         <div class="material-section" style="margin-bottom:16px;">
             <h4>📄 Скрипт</h4>
             <a href="${SCRIPT_URL}" target="_blank" class="btn-primary" style="display:inline-block;">Открыть скрипт</a>
         </div>
-        
         ${trainerBtnHtml ? `<div class="material-section" style="margin-bottom:16px;">${trainerBtnHtml}</div>` : ''}
-        
         <div class="material-section" style="margin-bottom:16px;">${examSection}</div>
-        
         <div style="display:flex; justify-content:flex-end; margin-top:20px;">
             <button class="btn-outline" id="closeBtn" style="padding:8px 24px;">Закрыть</button>
         </div>
@@ -444,8 +565,8 @@ function openStudyModal(blockIdx) {
         if (trainerBtn) {
             trainerBtn.onclick = () => {
                 if (blockIdx === 0) openTrainerBlock0(modal);
-                else if (blockIdx === 1) openTrainerBlock1(modal);
                 else if (blockIdx === 2) openTrainerBlock2(modal);
+                else if (blockIdx === 3) openTrainerBlock3(modal);
                 else {
                     bpBlocks[blockIdx].trainerPassed = true;
                     saveTrainingProgress();
@@ -491,9 +612,15 @@ function renderTrainingModule() {
     for (let i = 0; i < bpBlocks.length; i++) {
         const b = bpBlocks[i];
         const isCompleted = trainingCompleted[i];
-        const isUnlocked = b.isUnlocked || b.isFinal;
+        const isUnlocked = b.isUnlocked || (b.isFinal && b.isUnlocked);
         const grade = trainingGrades[i];
         const cheatMark = cheatModeEnabled ? `<div class="cheat-mark" data-idx="${i}">✓</div>` : '';
+        
+        let statusText = '';
+        if (isCompleted) statusText = '✅ Изучен';
+        else if (isUnlocked) statusText = '📖 Доступен';
+        else if (b.isFinal) statusText = '🏆 Финал';
+        else statusText = '🔒 Закрыт';
         
         blocksHtml += `<div class="bp-block-card ${isCompleted ? 'completed' : ''} ${!isUnlocked && !isCompleted ? 'locked-block' : ''}" data-idx="${i}">
             ${cheatMark}
@@ -501,7 +628,7 @@ function renderTrainingModule() {
             <div class="bp-card-desc">${b.desc}</div>
             <div class="bp-card-status">
                 <span class="badge ${isCompleted ? 'badge-success' : (isUnlocked ? 'badge-warning' : 'badge-secondary')}">
-                    ${isCompleted ? '✅ Изучен' : (isUnlocked ? '📖 Доступен' : (b.isFinal ? '🏆 Финал' : '🔒 Закрыт'))}
+                    ${statusText}
                 </span>
                 ${grade > 0 ? `<span>🎓 ${grade}/5</span>` : ''}
             </div>
@@ -516,7 +643,7 @@ function renderTrainingModule() {
         <div class="progress-sidebar">
             <div class="progress-stats"><h4>📊 Прогресс</h4><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${percent}%"></div></div><p>${stats.completedCount} из ${stats.total} блоков</p></div>
             <div class="grade-box"><div>🏆 Средняя оценка</div><div class="grade-number">${stats.avgGrade} / 5</div></div>
-            ${stats.completedCount === stats.total ? '<div style="background:#dcfce7; padding:12px; border-radius:16px;">🎉 Обучение пройдено! Теперь вы можете пройти вступительный экзамен у администратора.</div>' : ''}
+            ${getEntranceExamButtonHtml()}
         </div>
     </div>`;
     
@@ -537,6 +664,11 @@ function renderTrainingModule() {
             };
         });
     }
+    
+    const entranceExamBtn = document.getElementById('entranceExamBtn');
+    if (entranceExamBtn) {
+        entranceExamBtn.onclick = () => openEntranceExamModal();
+    }
 }
 
 function showTraining() {
@@ -546,14 +678,12 @@ function showTraining() {
     renderTrainingModule();
 }
 
-// Глобальная функция для Cheat mode
 window.enableCheatMode = () => {
     cheatModeEnabled = true;
     showToast("⚡ Cheat mode включён!");
     if (document.getElementById('trackContent').innerHTML) renderTrainingModule();
 };
 
-// Экспортируем функции для main.js
 window.showTraining = showTraining;
 window.renderTrainingModule = renderTrainingModule;
 window.loadTrainingProgress = loadTrainingProgress;
