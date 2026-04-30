@@ -26,7 +26,7 @@ function renderModulesGrid() {
     if (!grid) return;
     
     // ВРЕМЕННО ДЛЯ ТЕСТА: адаптация открыта для всех
-    const adaptationAvailable = true;
+    let adaptationAvailable = true;
     
     const adaptationBadge = adaptationAvailable 
         ? '<span class="adaptation-status-badge">✓ Доступен</span>' 
@@ -59,7 +59,7 @@ function renderModulesGrid() {
         </div>
     `;
     
-    // Обработчики кликов
+    // Обработчики кликов по модулям
     document.querySelectorAll('.module-card').forEach(card => {
         card.onclick = () => {
             if (card.classList.contains('locked')) {
@@ -67,20 +67,33 @@ function renderModulesGrid() {
                 return;
             }
             const module = card.dataset.module;
+            
             if (module === 'training') {
-                showTraining();
-            } else if (module === 'adaptation') {
-                showAdaptation();
-            } else if (module === 'knowledge') {
+                if (typeof showTraining === 'function') {
+                    showTraining();
+                } else {
+                    showToast('Модуль обучения загружается...');
+                }
+            } 
+            else if (module === 'adaptation') {
+                if (typeof showAdaptation === 'function') {
+                    showAdaptation();
+                } else {
+                    showToast('Модуль адаптации загружается...');
+                }
+            } 
+            else if (module === 'knowledge') {
                 if (typeof showKnowledge === 'function') {
                     showKnowledge();
                 } else {
-                    showToast('Модуль загружается...');
+                    showToast('Модуль базы знаний загружается...');
                 }
-            } else if (module === 'crm') {
+            } 
+            else if (module === 'crm') {
                 if (typeof showCRM === 'function') {
                     showCRM();
                 } else {
+                    console.error('showCRM not defined');
                     showToast('Модуль CRM загружается...');
                 }
             }
@@ -162,9 +175,9 @@ async function initPortal(user) {
     }
     
     // Загружаем статус адаптации
-    if (typeof loadAdaptationStatus === 'function') {
+    if (typeof window.loadAdaptationStatus === 'function') {
         try {
-            await loadAdaptationStatus();
+            await window.loadAdaptationStatus();
         } catch(e) {
             console.log('Ошибка загрузки статуса адаптации:', e);
         }
@@ -187,16 +200,6 @@ function resetUserProgress() {
     if (currentUser && !isAdminMode) {
         if (confirm('Сбросить весь прогресс обучения?')) {
             localStorage.removeItem(`training_${currentUser.phone}`);
-            if (typeof trainingCompleted !== 'undefined') {
-                for (let i = 0; i < trainingCompleted.length; i++) {
-                    trainingCompleted[i] = false;
-                    trainingGrades[i] = 0;
-                    if (bpBlocks && bpBlocks[i] && bpBlocks[i].hasTrainer) bpBlocks[i].trainerPassed = false;
-                }
-            }
-            if (typeof saveTrainingProgress === 'function') {
-                saveTrainingProgress();
-            }
             location.reload();
         }
     } else if (isAdminMode) {
@@ -209,6 +212,7 @@ function resetUserProgress() {
 
 // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
 document.addEventListener('DOMContentLoaded', () => {
+    // Кнопка регистрации
     const registerBtn = document.getElementById('registerBtn');
     if (registerBtn) {
         registerBtn.onclick = async () => {
@@ -230,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     
+    // Кнопка входа в админку
     const adminLoginBtn = document.getElementById('adminLoginBtn');
     if (adminLoginBtn) {
         adminLoginBtn.onclick = async () => {
@@ -240,11 +245,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentUser = null;
                 window.currentUser = null;
                 
+                // Скрываем регистрацию, показываем портал
                 const registrationScreen = document.getElementById('registrationScreen');
                 const portalScreen = document.getElementById('portalScreen');
                 if (registrationScreen) registrationScreen.style.display = 'none';
                 if (portalScreen) portalScreen.classList.remove('hidden');
                 
+                // Скрываем модули и кнопку "Назад"
                 const modulesGrid = document.getElementById('modulesGrid');
                 const backBtn = document.getElementById('backToModulesBtn');
                 const trackContent = document.getElementById('trackContent');
@@ -252,9 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (backBtn) backBtn.style.display = 'none';
                 if (trackContent) trackContent.innerHTML = '';
                 
+                // Показываем админ-панель
                 const adminPanel = document.getElementById('adminPanel');
                 if (adminPanel) adminPanel.classList.remove('hidden');
                 
+                // Загружаем админ-панель
                 try {
                     if (typeof loadAdminPanel === 'function') {
                         await loadAdminPanel();
@@ -273,13 +282,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     
+    // Кнопка сброса
     const resetBtn = document.getElementById('resetBtn');
     if (resetBtn) {
         resetBtn.onclick = () => resetUserProgress();
     }
 });
 
-// ========== АВТОВХОД ==========
+// ========== АВТОВХОД ДЛЯ ПРОВЕРКИ ==========
 const savedUser = localStorage.getItem('portalUser');
 if (savedUser) {
     try {
@@ -294,10 +304,10 @@ if (savedUser) {
     }
 }
 
+// Делаем необходимые функции глобальными
 window.showModulesGrid = showModulesGrid;
 window.renderModulesGrid = renderModulesGrid;
 window.showProfileCard = showProfileCard;
-window.showToast = showToast;
 window.resetUserProgress = resetUserProgress;
 
 console.log('✅ Портал готов!');
