@@ -1,4 +1,4 @@
-// ========== training/index.js - точка входа ==========
+// ========== training/index.js - точка входа модуля обучения ==========
 import { bpBlocks } from './blocks.js';
 import { 
     trainingCompleted, trainingGrades, cheatModeEnabled,
@@ -6,16 +6,8 @@ import {
     calculateTrainingStats, updateTrainingUnlockedBlocks,
     showToast
 } from './training.js';
-import { openTrainerBlock0 } from './trainer-block0.js';
-import { openTrainerBlock2 } from './trainer-block2.js';
-import { openTrainerBlock3 } from './trainer-block3.js';
-import { openExamModal, openStudyModal } from './exam.js';
-import { 
-    entranceExamStatus, entranceExamAnswer,
-    loadEntranceExam, openEntranceExamModal, 
-    getEntranceExamButtonHtml, submitEntranceExamForReview 
-} from './entrance-exam.js';
-import { renderTrainingModule, showTraining, loadTrainingProgress as loadTrainingProgressUI } from './ui.js';
+import { renderTrainingModule, showTraining } from './ui.js';
+import { loadEntranceExam } from './entrance-exam.js';
 
 // Инициализация
 function completeBlockViaCheat(blockId) {
@@ -33,8 +25,9 @@ function completeBlockViaCheat(blockId) {
 
 // Делаем функции глобальными для доступа из других модулей
 window.showTraining = showTraining;
-window.loadTrainingProgress = loadTrainingProgressUI;
+window.loadTrainingProgress = loadTrainingProgress;
 window.calculateTrainingStats = calculateTrainingStats;
+
 window.enableCheatMode = () => {
     cheatModeEnabled = true;
     showToast("⚡ Cheat mode включён!");
@@ -42,13 +35,13 @@ window.enableCheatMode = () => {
 };
 
 // Загружаем сохранённые данные
-loadTrainingProgressUI();
+loadTrainingProgress();
 loadEntranceExam();
 
 // Экспорт для main.js
 export { 
     showTraining, 
-    loadTrainingProgress as loadTrainingProgress, 
+    loadTrainingProgress, 
     calculateTrainingStats,
     trainingCompleted,
     trainingGrades,
