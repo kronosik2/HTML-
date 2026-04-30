@@ -1,10 +1,30 @@
 // ========== crm.js - Модуль Функционал CRM ==========
 
 const crmBlocks = [
-    { id: 1, title: "📞 Звонки/Обращения", desc: "Управление входящими и исходящими звонками", videoText: "Здесь будет видео-обучение по работе со звонками и обращениями клиентов. Как правильно принимать звонки, фиксировать обращения и передавать их в работу." },
-    { id: 2, title: "📋 Заявки", desc: "Создание и ведение заявок в CRM", videoText: "Здесь будет видео-обучение по созданию и ведению заявок. Как заполнять все поля, прикреплять файлы и отслеживать статусы." },
-    { id: 3, title: "⭐ Рейтинг", desc: "Система оценки исполнителей и менеджеров", videoText: "Здесь будет видео-обучение по системе рейтингов. Как формируется рейтинг исполнителя, что влияет на его изменение." },
-    { id: 4, title: "👥 База исполнителя", desc: "Управление базой грузчиков и водителей", videoText: "Здесь будет видео-обучение по работе с базой исполнителей. Как добавлять новых, просматривать их профили и назначать на заявки." }
+    { 
+        id: 1, 
+        title: "📞 Звонки/Обращения", 
+        desc: "Управление входящими и исходящими звонками",
+        content: "📌 **Основные правила работы со звонками:**\n\n1. Всегда отвечай на звонок максимум за 10 секунд.\n2. Представься и назови компанию: «РАЗ! ГРУЗЧИКИ, меня зовут [Имя]». ..."
+    },
+    { 
+        id: 2, 
+        title: "📋 Заявки", 
+        desc: "Создание и ведение заявок в CRM",
+        content: "📌 **Правила создания заявки в CRM:**\n\n1. Укажи точный адрес..."
+    },
+    { 
+        id: 3, 
+        title: "⭐ Рейтинг", 
+        desc: "Система оценки исполнителей и менеджеров",
+        content: "📌 **Как формируется рейтинг исполнителя:**..."
+    },
+    { 
+        id: 4, 
+        title: "👥 База исполнителя", 
+        desc: "Управление базой грузчиков и водителей",
+        content: "📌 **Что содержится в базе исполнителей:**..."
+    }
 ];
 
 function renderCRMModule() {
@@ -37,29 +57,35 @@ function renderCRMModule() {
         </div>
     `;
     
-    document.getElementById('backToModulesBtnCRM').onclick = () => showModulesGrid();
+    document.getElementById('backToModulesBtnCRM').onclick = () => {
+        if (typeof window.showModulesGrid === 'function') {
+            window.showModulesGrid();
+        }
+    };
     
     document.querySelectorAll('.bp-block-card').forEach(card => {
         card.onclick = () => {
             const id = parseInt(card.dataset.id);
             const block = crmBlocks.find(b => b.id === id);
-            if (block) openCRMVideoModal(block);
+            if (block) openCRMModal(block);
         };
     });
 }
 
-function openCRMVideoModal(block) {
+function openCRMModal(block) {
     const modal = document.createElement('div');
     modal.className = 'modal';
+    
+    const formattedContent = block.content
+        .replace(/📌 \*\*(.+?)\*\*/g, '<h4 style="margin:16px 0 8px 0;">📌 <strong>$1</strong></h4>')
+        .replace(/\n\*\s(.+)/g, '<li style="margin-left:20px;">$1</li>')
+        .replace(/\n/g, '<br>');
+    
     modal.innerHTML = `
-        <div class="modal-content" style="max-width:600px; width:100%;">
+        <div class="modal-content" style="max-width:650px; width:100%;">
             <h3 style="margin-bottom:16px;">${block.title}</h3>
-            <div style="background:#f8fafc; border-radius:16px; padding:20px; margin-bottom:20px; line-height:1.6;">
-                <p style="margin-bottom:12px;"><strong>📺 Видео-обучение:</strong></p>
-                <p>${block.videoText}</p>
-                <div style="background:#e2e8f0; border-radius:12px; padding:40px; text-align:center; margin-top:16px;">
-                    🎥 Здесь будет видео-плеер
-                </div>
+            <div style="background:#f8fafc; border-radius:16px; padding:20px; margin-bottom:20px; max-height:60vh; overflow-y:auto;">
+                ${formattedContent}
             </div>
             <div style="display:flex; justify-content:flex-end;">
                 <button class="btn-outline" id="closeModalBtn">Закрыть</button>
@@ -71,9 +97,18 @@ function openCRMVideoModal(block) {
 }
 
 function showCRM() {
-    document.getElementById('modulesGrid').style.display = 'none';
-    document.getElementById('backToModulesBtn').style.display = 'inline-block';
+    const modulesGrid = document.getElementById('modulesGrid');
+    const backBtn = document.getElementById('backToModulesBtn');
+    const trackContent = document.getElementById('trackContent');
+    
+    if (modulesGrid) modulesGrid.style.display = 'none';
+    if (backBtn) backBtn.style.display = 'inline-block';
+    if (trackContent) trackContent.innerHTML = '<div style="text-align:center; padding:40px;">Загрузка...</div>';
+    
     renderCRMModule();
 }
 
+// ✅ Глобальная функция (ВАЖНО!)
 window.showCRM = showCRM;
+
+console.log('✅ CRM модуль загружен');
