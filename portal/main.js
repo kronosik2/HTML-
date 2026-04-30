@@ -1,8 +1,13 @@
 // ========== main.js - Главный контроллер ==========
 // Инициализация, роутинг, общие функции
+import { showTraining, loadTrainingProgress, calculateTrainingStats } from './training/index.js';
+import { showAdaptation } from './adaptation.js';
+import { showKnowledge } from './knowledge.js';
+import { showCRM } from './crm.js';
 
 let currentUser = null;
 let isAdminMode = false;
+let adaptationStatus = { accepted: false };
 
 // ========== ОБЩИЕ ФУНКЦИИ ==========
 function showToast(msg) {
@@ -13,21 +18,14 @@ function showToast(msg) {
     setTimeout(() => toast.remove(), 2500);
 }
 
-// Делаем showToast глобальной для других модулей
 window.showToast = showToast;
-
-// Делаем глобальные ссылки для модулей
-window.currentUser = null;
-window.isAdminMode = false;
 
 // ========== ОТРИСОВКА МОДУЛЕЙ ==========
 function renderModulesGrid() {
     const grid = document.getElementById('modulesGrid');
     if (!grid) return;
     
-    // ВРЕМЕННО ДЛЯ ТЕСТА: адаптация открыта для всех
     const adaptationAvailable = true;
-    
     const adaptationBadge = adaptationAvailable 
         ? '<span class="adaptation-status-badge">✓ Доступен</span>' 
         : '<span class="module-status locked-status">🔒 Закрыт</span>';
@@ -59,7 +57,6 @@ function renderModulesGrid() {
         </div>
     `;
     
-    // Обработчики кликов
     document.querySelectorAll('.module-card').forEach(card => {
         card.onclick = () => {
             if (card.classList.contains('locked')) {
@@ -72,17 +69,9 @@ function renderModulesGrid() {
             } else if (module === 'adaptation') {
                 showAdaptation();
             } else if (module === 'knowledge') {
-                if (typeof showKnowledge === 'function') {
-                    showKnowledge();
-                } else {
-                    showToast('Модуль загружается...');
-                }
+                showKnowledge();
             } else if (module === 'crm') {
-                if (typeof showCRM === 'function') {
-                    showCRM();
-                } else {
-                    showToast('Модуль CRM загружается...');
-                }
+                showCRM();
             }
         };
     });
@@ -140,41 +129,35 @@ async function initPortal(user) {
     isAdminMode = false;
     window.isAdminMode = false;
     
-    // Скрываем админ-панель
     const adminPanel = document.getElementById('adminPanel');
     if (adminPanel) adminPanel.classList.add('hidden');
     
-    // Показываем портал
     const registrationScreen = document.getElementById('registrationScreen');
     const portalScreen = document.getElementById('portalScreen');
     if (registrationScreen) registrationScreen.style.display = 'none';
     if (portalScreen) portalScreen.classList.remove('hidden');
     
-    // Заполняем приветствие
     const userNameBtn = document.getElementById('userNameBtn');
     const welcomeName = document.getElementById('welcomeName');
     if (userNameBtn) userNameBtn.innerText = user.name;
     if (welcomeName) welcomeName.innerText = user.name.split(' ')[0];
     
-    // Загружаем прогресс обучения
     if (typeof loadTrainingProgress === 'function') {
         loadTrainingProgress();
     }
     
-    // Загружаем статус адаптации
-    if (typeof loadAdaptationStatus === 'function') {
+    if (typeof window.loadAdaptationStatus === 'function') {
         try {
-            await loadAdaptationStatus();
+            await window.loadAdaptationStatus();
+            adaptationStatus = window.adaptationStatus || { accepted: false };
         } catch(e) {
             console.log('Ошибка загрузки статуса адаптации:', e);
         }
     }
     
-    // Отрисовываем модули
     renderModulesGrid();
     showModulesGrid();
     
-    // Настраиваем обработчики
     const backBtn = document.getElementById('backToModulesBtn');
     if (backBtn) backBtn.onclick = () => showModulesGrid();
     
@@ -187,16 +170,6 @@ function resetUserProgress() {
     if (currentUser && !isAdminMode) {
         if (confirm('Сбросить весь прогресс обучения?')) {
             localStorage.removeItem(`training_${currentUser.phone}`);
-            if (typeof trainingCompleted !== 'undefined') {
-                for (let i = 0; i < trainingCompleted.length; i++) {
-                    trainingCompleted[i] = false;
-                    trainingGrades[i] = 0;
-                    if (bpBlocks && bpBlocks[i] && bpBlocks[i].hasTrainer) bpBlocks[i].trainerPassed = false;
-                }
-            }
-            if (typeof saveTrainingProgress === 'function') {
-                saveTrainingProgress();
-            }
             location.reload();
         }
     } else if (isAdminMode) {
@@ -294,11 +267,9 @@ if (savedUser) {
     }
 }
 
+// Экспортируем функции для доступа из других модулей
 window.showModulesGrid = showModulesGrid;
-window.renderModulesGrid = renderModulesGrid;
 window.showProfileCard = showProfileCard;
-window.showToast = showToast;
 window.resetUserProgress = resetUserProgress;
 
 console.log('✅ Портал готов!');
-console.log('Для Cheat mode введите enableCheatMode()');
