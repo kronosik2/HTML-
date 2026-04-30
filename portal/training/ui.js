@@ -1,7 +1,30 @@
+// ========== training/ui.js - рендер модуля обучения ==========
 import { bpBlocks } from './blocks.js';
-import { trainingCompleted, trainingGrades, cheatModeEnabled, calculateTrainingStats, showToast } from './training.js';
-import { openStudyModal } from './exam.js';
-import { getEntranceExamButtonHtml, entranceExamStatus, entranceExamAnswer, openEntranceExamModal } from './entrance-exam.js';
+import { 
+    trainingCompleted, 
+    trainingGrades, 
+    cheatModeEnabled, 
+    calculateTrainingStats, 
+    loadTrainingProgress, 
+    saveTrainingProgress,
+    updateTrainingUnlockedBlocks,
+    showToast 
+} from './training.js';
+import { openStudyModal, openExamModal } from './exam.js';
+import { getEntranceExamButtonHtml, openEntranceExamModal } from './entrance-exam.js';
+
+function completeBlockViaCheat(blockId) {
+    if (!cheatModeEnabled) return;
+    if (!trainingCompleted[blockId]) {
+        trainingCompleted[blockId] = true;
+        trainingGrades[blockId] = 5;
+        if (bpBlocks[blockId].hasTrainer) bpBlocks[blockId].trainerPassed = true;
+        saveTrainingProgress();
+        updateTrainingUnlockedBlocks();
+        renderTrainingModule();
+        showToast(`⚡ Блок "${bpBlocks[blockId].title}" пройден`);
+    }
+}
 
 export function renderTrainingModule() {
     const container = document.getElementById('trackContent');
@@ -74,8 +97,20 @@ export function renderTrainingModule() {
 }
 
 export function showTraining() {
-    document.getElementById('modulesGrid').style.display = 'none';
-    document.getElementById('backToModulesBtn').style.display = 'inline-block';
+    const modulesGrid = document.getElementById('modulesGrid');
+    const backBtn = document.getElementById('backToModulesBtn');
+    const trackContent = document.getElementById('trackContent');
+    
+    if (modulesGrid) modulesGrid.style.display = 'none';
+    if (backBtn) backBtn.style.display = 'inline-block';
+    
+    // Очищаем контент перед загрузкой
+    if (trackContent) trackContent.innerHTML = '<div style="text-align:center; padding:40px;">Загрузка...</div>';
+    
+    // Загружаем прогресс и рендерим
     loadTrainingProgress();
     renderTrainingModule();
 }
+
+// Экспортируем функцию для main.js
+export { loadTrainingProgress };
