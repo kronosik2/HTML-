@@ -1,60 +1,52 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Портал стажёра | РАЗ! ГРУЗЧИКИ</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<div class="portal-container">
-    <!-- Экран регистрации -->
-    <div id="registrationScreen" style="padding: 32px;">
-        <div class="reg-card">
-            <h2>🎯 Портал обучения</h2>
-            <p style="margin-bottom: 20px;">Зарегистрируйтесь, чтобы начать</p>
-            <input type="text" id="regName" placeholder="ФИО">
-            <input type="tel" id="regPhone" placeholder="Телефон">
-            <button class="btn-primary" id="registerBtn" style="width: 100%;">Продолжить →</button>
-            <button class="btn-outline" id="adminLoginBtn" style="width: 100%; margin-top: 12px;">🔐 Администратор</button>
-        </div>
-    </div>
+// ========== training/index.js - точка входа модуля обучения ==========
+import { bpBlocks } from './blocks.js';
+import { 
+    trainingCompleted, trainingGrades, cheatModeEnabled,
+    SCRIPT_URL, saveTrainingProgress, loadTrainingProgress,
+    calculateTrainingStats, updateTrainingUnlockedBlocks,
+    showToast
+} from './training.js';
+import { renderTrainingModule, showTraining } from './ui.js';
+import { loadEntranceExam } from './entrance-exam.js';
 
-    <!-- Основной портал -->
-    <div id="portalScreen" class="hidden">
-        <div class="portal-header">
-            <div class="logo">РАЗ! <span>ГРУЗЧИКИ</span></div>
-            <div class="user-area">
-                <div class="user-name-clickable" id="userNameBtn"></div>
-                <button class="reset-btn" id="resetBtn">🔄 Сброс</button>
-            </div>
-        </div>
-        <div class="portal-main">
-            <div class="welcome-block">
-                <div class="welcome-quote">🌟 Добро пожаловать, <span id="welcomeName"></span>!</div>
-            </div>
-            <div><button class="btn-back" id="backToModulesBtn" style="display: none;">← Все модули</button></div>
-            
-            <!-- Контейнер для модулей -->
-            <div id="modulesGrid" class="modules-grid"></div>
-            <div id="trackContent"></div>
-            
-            <!-- Админ-панель -->
-            <div id="adminPanel" class="admin-panel hidden">
-                <h3>📊 Панель администратора</h3>
-                <div id="adminTableContainer"></div>
-            </div>
-        </div>
-    </div>
-</div>
+// Инициализация
+function completeBlockViaCheat(blockId) {
+    if (!cheatModeEnabled) return;
+    if (!trainingCompleted[blockId]) {
+        trainingCompleted[blockId] = true;
+        trainingGrades[blockId] = 5;
+        if (bpBlocks[blockId].hasTrainer) bpBlocks[blockId].trainerPassed = true;
+        saveTrainingProgress();
+        updateTrainingUnlockedBlocks();
+        renderTrainingModule();
+        showToast(`⚡ Блок "${bpBlocks[blockId].title}" пройден`);
+    }
+}
 
-<!-- Подключаем модули -->
-<script src="api.js"></script>
-<script type="module" src="training/index.js"></script>
-<script src="main.js"></script>
-<script src="adaptation.js"></script>
-<script src="admin.js"></script>
-<script src="knowledge.js"></script>
-<script src="main.js"></script>
-</body>
-</html>
+// Делаем функции глобальными для доступа из других модулей
+window.showTraining = showTraining;
+window.loadTrainingProgress = loadTrainingProgress;
+window.calculateTrainingStats = calculateTrainingStats;
+
+window.enableCheatMode = () => {
+    cheatModeEnabled = true;
+    showToast("⚡ Cheat mode включён!");
+    if (document.getElementById('trackContent').innerHTML) renderTrainingModule();
+};
+
+// Загружаем сохранённые данные
+loadTrainingProgress();
+loadEntranceExam();
+
+// Экспорт для main.js
+export { 
+    showTraining, 
+    loadTrainingProgress, 
+    calculateTrainingStats,
+    trainingCompleted,
+    trainingGrades,
+    cheatModeEnabled,
+    bpBlocks
+};
+
+console.log('✅ Модуль обучения загружен');
