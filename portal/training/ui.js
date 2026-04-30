@@ -10,7 +10,7 @@ import {
     updateTrainingUnlockedBlocks,
     showToast 
 } from './training.js';
-import { openStudyModal, openExamModal } from './exam.js';
+import { openStudyModal } from './exam.js';
 import { getEntranceExamButtonHtml, openEntranceExamModal } from './entrance-exam.js';
 
 function completeBlockViaCheat(blockId) {
@@ -112,7 +112,7 @@ export function showTraining() {
     renderTrainingModule();
 }
 
-// Экспортируем функцию для main.js
-export { loadTrainingProgress };
 // Делаем функцию глобальной для доступа из exam.js
 window.renderTrainingModule = renderTrainingModule;
+
+export { loadTrainingProgress };
