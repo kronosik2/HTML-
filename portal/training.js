@@ -1,8 +1,6 @@
-// ========== training.js - Модуль Обучения (расширенная версия) ==========
+// ========== training.js - Модуль Обучения (расширенная версия с видео-сценариями) ==========
 
-let currentUser = null;
 let cheatModeEnabled = false;
-let isAdminMode = false;
 
 function showToast(msg) {
     const toast = document.createElement('div');
@@ -11,11 +9,10 @@ function showToast(msg) {
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 2500);
 }
-window.showToast = showToast;
 
 const SCRIPT_URL = "https://docs.google.com/document/d/1ySNWcceQLIDYIEs0VgaG6-8cVLgc4oRoMIFR8ZXOgjM/edit?usp=sharing";
 
-// ========== БЛОКИ ОБУЧЕНИЯ (расширенные) ==========
+// ========== БЛОКИ ОБУЧЕНИЯ (с видео-сценариями) ==========
 const bpBlocks = [
     { id: 0, title: "📞 Приём обращения", desc: "Звонок / заявка с сайта / мессенджер", isUnlocked: true,
       goal: "Обработать обращение мгновенно! Шанс продажи увеличивается в 2 раза, если ответить в течение 10 секунд.",
@@ -50,6 +47,19 @@ const bpBlocks = [
       result: "Прозрачная и выгодная цена для компании и клиента.",
       tools: "Калькулятор стоимости + CRM",
       audio: null, hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
+      videoScript: `
+🎥 **Видео-сценарий: Ценообразование**
+
+📌 **Тренажёр с кейсами:**
+• Повышение на 1 пункт
+• Повышение на 2 пункта
+• Понижение на 3 пункта
+
+📌 **Что тренируем:**
+• Аргументация скидки
+• Срочные заявки
+• Долгие заявки без нагрузки
+      `,
       questions: [] },
     { id: 2, title: "📝 Составление заявки", desc: "Фиксируем адрес, объём, дату, цену", isUnlocked: false,
       goal: "Оформить заявку верно, без ошибок.",
@@ -57,14 +67,22 @@ const bpBlocks = [
       result: "Оформленная заявка (правильное описание, верный адрес, нужное время!)",
       tools: "CRM + твоя внимательность",
       audio: null, hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
-      orderTypes: [
-        { title: "🛠️ Разнорабочие на смену 8-12 часов", desc: "2 человека, погрузка/разгрузка, склад", basePrice: 4000 },
-        { title: "🚛 Вывоз мусора", desc: "газель, 5 кубов, строительный мусор", basePrice: 3500 },
-        { title: "⛏️ Копка траншеи", desc: "длина 10м, глубина 1м, без техники", basePrice: 8000 },
-        { title: "🏢 Юр.клиент", desc: "офисный переезд, 15 сотрудников, 20 коробок", basePrice: 12000 },
-        { title: "🏠 Обычный переезд", desc: "2-комнатная квартира, без лифта", basePrice: 5000 },
-        { title: "🌲 Переезд за город", desc: "из города в область, дача, мебель", basePrice: 9000 }
-      ],
+      videoScript: `
+🎥 **Видео-сценарий: Составление заявки**
+
+📌 **Типы заявок в тренажёре:**
+• 🛠️ Разнорабочие на смену 8-12 часов
+• 🚛 Вывоз мусора
+• ⛏️ Копка траншеи
+• 🏢 Юр.клиент
+• 🏠 Обычный переезд
+• 🌲 Переезд за город
+
+📌 **Ценообразование:**
+• Стартовая цена по городу: от 3500 ₽
+• Как подсветить минималку
+• Интерактив с ценой
+      `,
       questions: [
           { text: "Что из перечисленного НЕ нужно указывать при составлении заявки?", options: ["Адрес", "Любимый цвет клиента", "Объём работ"], correct: 1 },
           { text: "Для чего нужно подробно описывать фронт работ?", options: ["Чтобы клиент был доволен", "Чтобы исполнители поняли задачу", "Чтобы увеличить чек"], correct: 1 },
@@ -78,22 +96,17 @@ const bpBlocks = [
       result: "Назначенные исполнители, подтвердившие выход.",
       tools: "CRM (список грузчиков, рейтинг, занятость)",
       audio: null, hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
-      ratingVideoScript: `
+      videoScript: `
 🎥 **Видео-сценарий: Рейтинг исполнителя**
 
-📌 **Что будет в видео:**
-• Запись экрана, голос поверх видео
-• Из чего строится рейтинг: **3 / 1 / 33%**
-• Первое число (3) — сколько заявок взял
-• Второе число (1) — на сколько заявок вышел
-• Третье число (33%) — процент брака (невыхода на заявку)
-• Комментарии к грузчику
-• Возможность принимать заявку на «Еду 2»
+📌 **Формула рейтинга: 3 / 1 / 33%**
+• 3 — сколько заявок взял
+• 1 — на сколько заявок вышел
+• 33% — процент брака (невыхода на заявку)
 
-📌 **Ключевые темы:**
-• Как читать рейтинг исполнителя
-• Кого выбирать в первую очередь
-• Что такое «брак» и почему он важен
+📌 **Дополнительно:**
+• Комментарии грузчику
+• Возможность принимать заявку на «Еду 2»
       `,
       questions: [
           { text: "Какой процент выполненных заказов считается надёжным?", options: ["Более 50%", "Более 75%", "100%"], correct: 1 },
@@ -108,20 +121,14 @@ const bpBlocks = [
       result: "Заявка выполнена без сбоев, клиент доволен сервисом.",
       tools: "CRM + телефон + чаты с исполнителями",
       audio: null, hasTrainer: false, trainerPassed: false, grade: 0, completed: false,
-      readinessVideoScript: `
+      videoScript: `
 🎥 **Видео-сценарий: Готовность и контроль**
 
 📌 **Что будет в видео:**
-• Запись экрана, голос поверх видео
 • Что такое «готовность» и как её подтверждают исполнители
 • Что значит готовность для заявки
 • Зачем звонить заказчику до начала заявки
 • Как подтверждать актуальность работы
-
-📌 **Ключевые темы:**
-• Как проверить готовность исполнителя
-• Подтверждение выезда
-• Звонок клиенту за час
       `,
       questions: [
           { text: "Что нужно сделать за час до выезда исполнителей?", options: ["Позвонить и подтвердить выход", "Отправить смс-уведомление", "Ничего, они сами приедут"], correct: 0 },
@@ -150,7 +157,7 @@ const bpBlocks = [
       ] }
 ];
 
-// Состояние
+// Состояние обучения
 let trainingCompleted = [false, false, false, false, false, false, false];
 let trainingGrades = [0, 0, 0, 0, 0, 0, 0];
 let entranceExamStatus = null;
@@ -227,8 +234,6 @@ function loadTrainingProgress() {
 }
 
 // ========== ТРЕНАЖЁРЫ ==========
-
-// 1. Ценообразование (3 кейса)
 function openPricingTrainer(modalToClose) {
     let step = 0;
     const cases = [
@@ -288,9 +293,15 @@ function openPricingTrainer(modalToClose) {
     renderCase();
 }
 
-// 2. Составление заявки (6 кейсов + ценообразование)
 function openOrderTypesTrainer(modalToClose) {
-    const orderTypes = bpBlocks[2].orderTypes;
+    const orderTypes = [
+        { title: "🛠️ Разнорабочие на смену 8-12 часов", desc: "2 человека, погрузка/разгрузка, склад", basePrice: 4000 },
+        { title: "🚛 Вывоз мусора", desc: "газель, 5 кубов, строительный мусор", basePrice: 3500 },
+        { title: "⛏️ Копка траншеи", desc: "длина 10м, глубина 1м, без техники", basePrice: 8000 },
+        { title: "🏢 Юр.клиент", desc: "офисный переезд, 15 сотрудников, 20 коробок", basePrice: 12000 },
+        { title: "🏠 Обычный переезд", desc: "2-комнатная квартира, без лифта", basePrice: 5000 },
+        { title: "🌲 Переезд за город", desc: "из города в область, дача, мебель", basePrice: 9000 }
+    ];
     let currentIndex = 0;
     const cityMinPrice = 3500;
     
@@ -321,11 +332,10 @@ function openOrderTypesTrainer(modalToClose) {
         modal.querySelector('#checkPriceBtn').onclick = () => {
             const price = parseInt(modal.querySelector('#priceInput').value);
             const feedback = modal.querySelector('#feedback');
-            const minPercent = Math.round((cityMinPrice / price) * 100);
             if (price >= order.basePrice) {
                 feedback.style.display = 'block';
                 feedback.style.background = '#dcfce7';
-                feedback.innerHTML = `✅ Отличная цена! (${price} ₽)<br>• Минималка по городу: ${cityMinPrice} ₽ (${minPercent}% от вашей цены)<br>• Рекомендуемая стартовая: от ${order.basePrice} ₽`;
+                feedback.innerHTML = `✅ Отличная цена! (${price} ₽)<br>• Минималка по городу: ${cityMinPrice} ₽<br>• Рекомендуемая стартовая: от ${order.basePrice} ₽`;
             } else if (price >= cityMinPrice) {
                 feedback.style.display = 'block';
                 feedback.style.background = '#fef9e3';
@@ -358,7 +368,6 @@ function openOrderTypesTrainer(modalToClose) {
     renderOrder();
 }
 
-// 3. Приём обращения (старый тренажёр, но в модалку добавим текст сценария)
 function openTrainerBlock0(modalToClose) {
     const modal = document.createElement('div'); modal.className = 'modal';
     let stepsDone = { phone: false, comment: false, order: false };
@@ -367,10 +376,6 @@ function openTrainerBlock0(modalToClose) {
         if (allDone) { modal.querySelector('#completeTrainerBtn').disabled = false; modal.querySelector('#completeTrainerBtn').style.opacity = '1'; }
     }
     modal.innerHTML = `<div class="modal-content"><h3>🎮 Тренажёр: Приём обращения</h3>
-        <div style="background:#fef9e3; padding:16px; border-radius:16px; margin-bottom:20px;">
-            <strong>📺 Видео-сценарий скоро будет добавлен</strong><br>
-            А пока потренируйся на этом тренажёре.
-        </div>
         <div class="instruction-steps"><div class="step" id="step1"><div class="step-check"></div><div class="step-text">📞 1. Возьми трубку</div></div>
         <div class="step" id="step2"><div class="step-check"></div><div class="step-text">✏️ 2. Заполни комментарий</div></div>
         <div class="step" id="step3"><div class="step-check"></div><div class="step-text">✅ 3. Нажми «Создать заявку»</div></div></div>
@@ -384,48 +389,6 @@ function openTrainerBlock0(modalToClose) {
     modal.querySelector('#commentInput').oninput = (e) => { if (e.target.value.trim()) { stepsDone.comment = true; modal.querySelector('#step2 .step-check').classList.add('done'); modal.querySelector('#step2 .step-text').classList.add('done'); updateSteps(); showToast("✅ Комментарий добавлен!"); } };
     modal.querySelector('#orderBtn').onclick = () => { if (stepsDone.phone && stepsDone.comment) { stepsDone.order = true; modal.querySelector('#step3 .step-check').classList.add('done'); modal.querySelector('#step3 .step-text').classList.add('done'); updateSteps(); showToast("✅ Заявка создана!"); } else { showToast("⚠️ Сначала возьми трубку и заполни комментарий!"); } };
     modal.querySelector('#completeTrainerBtn').onclick = () => { if (stepsDone.phone && stepsDone.comment && stepsDone.order) { bpBlocks[0].trainerPassed = true; saveTrainingProgress(); modal.remove(); if (modalToClose) modalToClose.remove(); showToast("🎉 Тренажёр пройден! Теперь доступен экзамен."); openExamModal(0); } };
-    modal.querySelector('#closeTrainerBtn').onclick = () => modal.remove();
-}
-
-function openTrainerBlock2(modalToClose) {
-    // старый тренажёр составления заявки — оставляем как есть, но теперь есть альтернатива
-    const modal = document.createElement('div'); modal.className = 'modal';
-    let fieldsDone = { city: false, name: false, work: false, price: false, address: false, datetime: false };
-    function checkAllDone() {
-        if (Object.values(fieldsDone).every(v=>v===true)) { modal.querySelector('#completeTrainerBtn').disabled = false; modal.querySelector('#completeTrainerBtn').style.opacity = '1'; }
-    }
-    modal.innerHTML = `<div class="modal-content"><h3>🎮 Тренажёр: Составление заявки</h3>
-        <div style="background:#fef9e3; padding:16px; border-radius:16px; margin-bottom:20px;">
-            <strong>📺 Видео-сценарий скоро будет добавлен</strong><br>
-            А пока пройди этот тренажёр.
-        </div>
-        <div class="material-section"><div class="section-title">🎧 Аудиоразговор с клиентом</div>
-        <audio controls style="width:100%; margin-bottom:10px;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio></div>
-        <div class="instruction-steps"><div class="step" id="step1"><div class="step-check"></div><div class="step-text">🏙️ Город</div></div><div class="step" id="step2"><div class="step-check"></div><div class="step-text">👤 Имя клиента</div></div>
-        <div class="step" id="step3"><div class="step-check"></div><div class="step-text">📋 Фронт работ</div></div><div class="step" id="step4"><div class="step-check"></div><div class="step-text">💰 Цена</div></div>
-        <div class="step" id="step5"><div class="step-check"></div><div class="step-text">📍 Адрес</div></div><div class="step" id="step6"><div class="step-check"></div><div class="step-text">📅 Дата и время</div></div></div>
-        <div class="crm-mock"><div class="form-field"><label>Город</label><select id="citySelect"><option value="">Выберите</option><option>Москва</option><option>СПБ</option></select></div>
-        <div class="form-field"><label>Имя клиента</label><input type="text" id="clientName" placeholder="Иван"></div>
-        <div class="form-field"><label>Фронт работ</label><textarea id="workDesc" rows="2"></textarea></div>
-        <div class="form-field"><label>Цена (руб/час)</label><input type="number" id="price}" placeholder="500"></div>
-        <div class="form-field"><label>Адрес</label><input type="text" id="address" placeholder="ул. Ленина, 10"></div>
-        <div class="form-field"><label>Дата и время</label><input type="datetime-local" id="datetime"></div></div>
-        <div style="margin-top:24px; text-align:right;"><button id="completeTrainerBtn" class="btn-primary" disabled style="opacity:0.5;">✅ Завершить</button>
-        <button id="closeTrainerBtn" class="btn-back" style="margin-left:12px;">Закрыть</button></div></div>`;
-    document.body.appendChild(modal);
-    const elements = { city: '#citySelect', name: '#clientName', work: '#workDesc', price: '#price', address: '#address', datetime: '#datetime' };
-    let stepMap = { city:1, name:2, work:3, price:4, address:5, datetime:6 };
-    Object.keys(elements).forEach(key => {
-        const el = modal.querySelector(elements[key]);
-        const event = (key === 'city') ? 'change' : 'input';
-        el.addEventListener(event, () => {
-            if (el.value && el.value.toString().trim() !== '') {
-                if (!fieldsDone[key]) { fieldsDone[key] = true; modal.querySelector(`#step${stepMap[key]} .step-check`).classList.add('done'); modal.querySelector(`#step${stepMap[key]} .step-text`).classList.add('done'); }
-                checkAllDone();
-            }
-        });
-    });
-    modal.querySelector('#completeTrainerBtn').onclick = () => { if (Object.values(fieldsDone).every(v=>v===true)) { bpBlocks[2].trainerPassed = true; saveTrainingProgress(); modal.remove(); if (modalToClose) modalToClose.remove(); showToast("🎉 Тренажёр пройден! Теперь доступен экзамен."); openExamModal(2); } };
     modal.querySelector('#closeTrainerBtn').onclick = () => modal.remove();
 }
 
@@ -465,13 +428,6 @@ function openTrainerBlock3(modalToClose) {
         else { completeBtn.disabled = true; completeBtn.style.opacity = '0.5'; }
     }
     modal.innerHTML = `<div class="modal-content"><h3>🎮 Тренажёр: Назначение исполнителя</h3>
-        <div style="background:#fef9e3; padding:16px; border-radius:16px; margin-bottom:20px;">
-            <strong>📺 Видео-сценарий о рейтинге (3/1/33%):</strong><br>
-            • 3 — сколько заявок взял<br>
-            • 1 — на сколько заявок вышел<br>
-            • 33% — процент брака (невыхода)<br>
-            Также комментарии грузчику и возможность принимать заявки на «Еду 2».
-        </div>
         <div class="material-section"><div class="section-title">📋 Задание</div><p><strong>Для перевозки пианино нужно 4 человека.</strong> Выберите водителей так, чтобы суммарно они предоставили ровно 4 человека, отдавая приоритет тем, у кого выше процент выполненных заказов.</p></div>
         <div class="trainer-header"><div class="selected-counter">👥 Выбрано человек: <span id="peopleCounter">0</span> / 4</div></div>
         <div id="workersList"></div>
@@ -502,6 +458,7 @@ function openExamModal(blockIdx) {
             <div id="examResult"></div>
         </div>`;
         document.body.appendChild(modal);
+        
         modal.querySelector('#submitExam').onclick = () => {
             trainingCompleted[blockIdx] = true;
             trainingGrades[blockIdx] = 5;
@@ -541,6 +498,7 @@ function openExamModal(blockIdx) {
             const selected = modal.querySelector(`input[name="q${idx}"]:checked`);
             if (selected && parseInt(selected.value) === q.correct) correct++;
         });
+        
         if (correct === 5) {
             trainingCompleted[blockIdx] = true;
             trainingGrades[blockIdx] = 5;
@@ -548,7 +506,7 @@ function openExamModal(blockIdx) {
             modal.remove();
             updateTrainingUnlockedBlocks();
             renderTrainingModule();
-            showToast(`✅ Экзамен сдан на 5! Следующий блок открыт.`);
+            showToast(`✅ Экзамен сдан! Следующий блок открыт.`);
         } else {
             modal.querySelector('#examResult').innerHTML = `<div style="background:#fee2e2; padding:12px; border-radius:16px;">❌ Оценка: ${correct}/5. Нужно 5 правильных ответов.</div>`;
         }
@@ -556,16 +514,20 @@ function openExamModal(blockIdx) {
     modal.querySelector('#closeBtn').onclick = () => modal.remove();
 }
 
+// ========== ОТКРЫТИЕ МОДАЛКИ БЛОКА (с видео-сценариями) ==========
 function openStudyModal(blockIdx) {
     const block = bpBlocks[blockIdx];
+    
     if (block.finalMessage) {
         openExamModal(blockIdx);
         return;
     }
+    
     if (!block.isUnlocked && !block.isFinal) {
         showToast("Сначала сдайте предыдущий блок на 5!");
         return;
     }
+    
     const isAlreadyCompleted = trainingCompleted[blockIdx];
     const modal = document.createElement('div');
     modal.className = 'modal';
@@ -575,8 +537,9 @@ function openStudyModal(blockIdx) {
     if (block.hasTrainer && !block.trainerPassed && !isAlreadyCompleted) {
         if (blockIdx === 0) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
         else if (blockIdx === 1) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр (ценообразование)</button>`;
-        else if (blockIdx === 2) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр (заявки + цены)</button>`;
+        else if (blockIdx === 2) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр (заявки)</button>`;
         else if (blockIdx === 3) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
+        else trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
     } else if (block.hasTrainer && (block.trainerPassed || isAlreadyCompleted)) {
         trainerBtnHtml = '<span class="badge-success" style="display:inline-block; padding:8px 16px;">✅ Тренажёр пройден</span>';
     }
@@ -590,27 +553,21 @@ function openStudyModal(blockIdx) {
         examSection = '<p style="text-align:center;">🔒 Сначала пройдите тренажёр</p>';
     }
     
-    let extraContent = '';
+    // Видео-сценарий (чёрный блок, как в CRM)
+    let videoScriptHtml = '';
     if (block.videoScript) {
-        extraContent += `<div class="material-section" style="margin-bottom:16px;background:#fef9e3;">
-            <div style="white-space:pre-wrap;">${block.videoScript}</div>
-        </div>`;
-    }
-    if (block.ratingVideoScript) {
-        extraContent += `<div class="material-section" style="margin-bottom:16px;background:#fef9e3;">
-            <div style="white-space:pre-wrap;">${block.ratingVideoScript}</div>
-        </div>`;
-    }
-    if (block.readinessVideoScript) {
-        extraContent += `<div class="material-section" style="margin-bottom:16px;background:#fef9e3;">
-            <div style="white-space:pre-wrap;">${block.readinessVideoScript}</div>
-        </div>`;
+        videoScriptHtml = `
+            <div class="material-section" style="background:#1e293b; color:white; margin-bottom:16px; border-radius:16px; padding:20px;">
+                <div style="font-size:18px; font-weight:600; margin-bottom:12px;">🎥 Скоро здесь появится видео</div>
+                <div style="font-size:14px; opacity:0.9; white-space:pre-wrap;">${block.videoScript}</div>
+            </div>
+        `;
     }
     
     modal.innerHTML = `
     <div class="modal-content" style="max-width:600px; width:100%;">
         <h3 style="margin-bottom:20px;">${block.title}</h3>
-        ${extraContent}
+        ${videoScriptHtml}
         <div class="material-section" style="background:#fef9e3; margin-bottom:16px;">
             <div><strong>🎯 ЦЕЛЬ:</strong> ${block.goal}</div>
             <div style="margin-top:8px;"><strong>⚠️ ОБЯЗАТЕЛЬНО:</strong> ${block.mandatory}</div>
@@ -631,6 +588,7 @@ function openStudyModal(blockIdx) {
             <button class="btn-outline" id="closeBtn" style="padding:8px 24px;">Закрыть</button>
         </div>
     </div>`;
+    
     document.body.appendChild(modal);
     
     if (block.hasTrainer && !block.trainerPassed && !isAlreadyCompleted) {
@@ -673,10 +631,90 @@ function completeBlockViaCheat(blockId) {
         showToast(`⚡ Блок "${bpBlocks[blockId].title}" пройден`);
     }
 }
-// ========== ДЕЛАЕМ ФУНКЦИИ ГЛОБАЛЬНЫМИ ==========
+
+// ========== ОТРИСОВКА МОДУЛЯ ОБУЧЕНИЯ ==========
+function renderTrainingModule() {
+    const container = document.getElementById('trackContent');
+    if (!container) return;
+    
+    const stats = calculateTrainingStats();
+    const percent = (stats.completedCount / stats.total) * 100;
+    let blocksHtml = '';
+    
+    for (let i = 0; i < bpBlocks.length; i++) {
+        const b = bpBlocks[i];
+        const isCompleted = trainingCompleted[i];
+        const isUnlocked = b.isUnlocked || b.isFinal;
+        const grade = trainingGrades[i];
+        const cheatMark = cheatModeEnabled ? `<div class="cheat-mark" data-idx="${i}">✓</div>` : '';
+        
+        let statusText = '';
+        if (isCompleted) statusText = '✅ Изучен';
+        else if (isUnlocked) statusText = '📖 Доступен';
+        else if (b.isFinal) statusText = '🏆 Финал';
+        else statusText = '🔒 Закрыт';
+        
+        blocksHtml += `<div class="bp-block-card ${isCompleted ? 'completed' : ''} ${!isUnlocked && !isCompleted ? 'locked-block' : ''}" data-idx="${i}">
+            ${cheatMark}
+            <div class="bp-card-title">${b.title}</div>
+            <div class="bp-card-desc">${b.desc}</div>
+            <div class="bp-card-status">
+                <span class="badge ${isCompleted ? 'badge-success' : (isUnlocked ? 'badge-warning' : 'badge-secondary')}">
+                    ${statusText}
+                </span>
+                ${grade > 0 ? `<span>🎓 ${grade}/5</span>` : ''}
+            </div>
+        </div>`;
+    }
+    
+    container.innerHTML = `<div class="training-layout">
+        <div class="bp-sidebar">
+            ${cheatModeEnabled ? '<div class="cheat-checkbox">⚡ Cheat mode ВКЛЮЧЁН</div>' : ''}
+            <div class="bp-block-list">${blocksHtml}</div>
+        </div>
+        <div class="progress-sidebar">
+            <div class="progress-stats"><h4>📊 Прогресс</h4><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${percent}%"></div></div><p>${stats.completedCount} из ${stats.total} блоков</p></div>
+            <div class="grade-box"><div>🏆 Средняя оценка</div><div class="grade-number">${stats.avgGrade} / 5</div></div>
+        </div>
+    </div>`;
+    
+    document.querySelectorAll('.bp-block-card').forEach(card => {
+        card.onclick = (e) => {
+            if (e.target.classList.contains('cheat-mark')) return;
+            const idx = parseInt(card.dataset.idx);
+            openStudyModal(idx);
+        };
+    });
+    
+    if (cheatModeEnabled) {
+        document.querySelectorAll('.cheat-mark').forEach(mark => {
+            mark.onclick = (e) => {
+                e.stopPropagation();
+                const idx = parseInt(mark.dataset.idx);
+                completeBlockViaCheat(idx);
+            };
+        });
+    }
+}
+
+function showTraining() {
+    const modulesGrid = document.getElementById('modulesGrid');
+    const backBtn = document.getElementById('backToModulesBtn');
+    const trackContent = document.getElementById('trackContent');
+    
+    if (modulesGrid) modulesGrid.style.display = 'none';
+    if (backBtn) backBtn.style.display = 'inline-block';
+    
+    if (trackContent) trackContent.innerHTML = '<div style="text-align:center; padding:40px;">Загрузка...</div>';
+    
+    loadTrainingProgress();
+    renderTrainingModule();
+}
+
+// ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ main.js ==========
 window.showTraining = showTraining;
 window.renderTrainingModule = renderTrainingModule;
 window.loadTrainingProgress = loadTrainingProgress;
 window.calculateTrainingStats = calculateTrainingStats;
 
-console.log('✅ training.js глобальные функции зарегистрированы');
+console.log('✅ training.js загружен, глобальные функции зарегистрированы');
