@@ -1,8 +1,6 @@
 // ========== training.js - Модуль Обучения (расширенная версия) ==========
 
-let currentUser = null;
 let cheatModeEnabled = false;
-let isAdminMode = false;
 
 function showToast(msg) {
     const toast = document.createElement('div');
