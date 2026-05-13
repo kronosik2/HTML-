@@ -1,7 +1,5 @@
 // ========== training.js - Модуль Обучения (расширенная версия) ==========
 
-let cheatModeEnabled = false;
-
 function showToast(msg) {
     const toast = document.createElement('div');
     toast.className = 'toast';
