@@ -1,6 +1,21 @@
-// ========== training.js - Модуль Обучения (7 блоков, включая Ценообразование) ==========
+// ========== training.js - Модуль Обучения (расширенная версия) ==========
 
-// Данные 7 блоков обучения
+let currentUser = null;
+let cheatModeEnabled = false;
+let isAdminMode = false;
+
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+}
+window.showToast = showToast;
+
+const SCRIPT_URL = "https://docs.google.com/document/d/1ySNWcceQLIDYIEs0VgaG6-8cVLgc4oRoMIFR8ZXOgjM/edit?usp=sharing";
+
+// ========== БЛОКИ ОБУЧЕНИЯ (расширенные) ==========
 const bpBlocks = [
     { id: 0, title: "📞 Приём обращения", desc: "Звонок / заявка с сайта / мессенджер", isUnlocked: true,
       goal: "Обработать обращение мгновенно! Шанс продажи увеличивается в 2 раза, если ответить в течение 10 секунд.",
@@ -8,6 +23,20 @@ const bpBlocks = [
       result: "Составленная заявка!", tools: "Скрипт + Настроение + Экспертиза",
       audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/1710435302.222577-2024-03-14-16_55-79054053761-.mp3",
       hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
+      videoScript: `
+🎥 **Видео-сценарий: Приём обращений**
+
+📌 **Что будет в видео:**
+• Запись экрана, голос поверх видео
+• Как зайти в Zoomer (CRM)
+• Как закреплять за собой звонок
+• Что писать в комментарий к обращению
+
+📌 **Ключевые темы:**
+• Интерфейс Zoomer
+• Правила закрепления звонка
+• Структура комментария (проблема, потребность, контакты)
+      `,
       questions: [
           { text: "Какова главная цель приёма обращения?", options: ["Продать сразу", "Обработать мгновенно и понять потребность", "Собрать контакты"], correct: 1 },
           { text: "По статистике, шанс продажи увеличивается в ... раз, если ответить в течение 10 секунд?", options: ["2 раза", "3 раза", "5 раз"], correct: 0 },
@@ -20,8 +49,7 @@ const bpBlocks = [
       mandatory: "Учитывать все затраты и не демпинговать.",
       result: "Прозрачная и выгодная цена для компании и клиента.",
       tools: "Калькулятор стоимости + CRM",
-      audio: null, hasTrainer: false, trainerPassed: false, grade: 0, completed: false,
-      simpleComplete: true,  // специальный флаг для простого прохождения
+      audio: null, hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
       questions: [] },
     { id: 2, title: "📝 Составление заявки", desc: "Фиксируем адрес, объём, дату, цену", isUnlocked: false,
       goal: "Оформить заявку верно, без ошибок.",
@@ -29,6 +57,14 @@ const bpBlocks = [
       result: "Оформленная заявка (правильное описание, верный адрес, нужное время!)",
       tools: "CRM + твоя внимательность",
       audio: null, hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
+      orderTypes: [
+        { title: "🛠️ Разнорабочие на смену 8-12 часов", desc: "2 человека, погрузка/разгрузка, склад", basePrice: 4000 },
+        { title: "🚛 Вывоз мусора", desc: "газель, 5 кубов, строительный мусор", basePrice: 3500 },
+        { title: "⛏️ Копка траншеи", desc: "длина 10м, глубина 1м, без техники", basePrice: 8000 },
+        { title: "🏢 Юр.клиент", desc: "офисный переезд, 15 сотрудников, 20 коробок", basePrice: 12000 },
+        { title: "🏠 Обычный переезд", desc: "2-комнатная квартира, без лифта", basePrice: 5000 },
+        { title: "🌲 Переезд за город", desc: "из города в область, дача, мебель", basePrice: 9000 }
+      ],
       questions: [
           { text: "Что из перечисленного НЕ нужно указывать при составлении заявки?", options: ["Адрес", "Любимый цвет клиента", "Объём работ"], correct: 1 },
           { text: "Для чего нужно подробно описывать фронт работ?", options: ["Чтобы клиент был доволен", "Чтобы исполнители поняли задачу", "Чтобы увеличить чек"], correct: 1 },
@@ -42,6 +78,23 @@ const bpBlocks = [
       result: "Назначенные исполнители, подтвердившие выход.",
       tools: "CRM (список грузчиков, рейтинг, занятость)",
       audio: null, hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
+      ratingVideoScript: `
+🎥 **Видео-сценарий: Рейтинг исполнителя**
+
+📌 **Что будет в видео:**
+• Запись экрана, голос поверх видео
+• Из чего строится рейтинг: **3 / 1 / 33%**
+• Первое число (3) — сколько заявок взял
+• Второе число (1) — на сколько заявок вышел
+• Третье число (33%) — процент брака (невыхода на заявку)
+• Комментарии к грузчику
+• Возможность принимать заявку на «Еду 2»
+
+📌 **Ключевые темы:**
+• Как читать рейтинг исполнителя
+• Кого выбирать в первую очередь
+• Что такое «брак» и почему он важен
+      `,
       questions: [
           { text: "Какой процент выполненных заказов считается надёжным?", options: ["Более 50%", "Более 75%", "100%"], correct: 1 },
           { text: "Что означает низкий процент выполненных заказов (менее 75%)?", options: ["Исполнитель супер-надёжный", "Риск срыва выше", "Он всегда выходит"], correct: 1 },
@@ -55,6 +108,21 @@ const bpBlocks = [
       result: "Заявка выполнена без сбоев, клиент доволен сервисом.",
       tools: "CRM + телефон + чаты с исполнителями",
       audio: null, hasTrainer: false, trainerPassed: false, grade: 0, completed: false,
+      readinessVideoScript: `
+🎥 **Видео-сценарий: Готовность и контроль**
+
+📌 **Что будет в видео:**
+• Запись экрана, голос поверх видео
+• Что такое «готовность» и как её подтверждают исполнители
+• Что значит готовность для заявки
+• Зачем звонить заказчику до начала заявки
+• Как подтверждать актуальность работы
+
+📌 **Ключевые темы:**
+• Как проверить готовность исполнителя
+• Подтверждение выезда
+• Звонок клиенту за час
+      `,
       questions: [
           { text: "Что нужно сделать за час до выезда исполнителей?", options: ["Позвонить и подтвердить выход", "Отправить смс-уведомление", "Ничего, они сами приедут"], correct: 0 },
           { text: "Исполнитель не вышел на смену. Ваши действия?", options: ["Предупредить клиента и найти замену", "Отменить заявку", "Попросить клиента подождать"], correct: 0 },
@@ -82,14 +150,11 @@ const bpBlocks = [
       ] }
 ];
 
-// Состояние обучения (теперь 7 блоков)
+// Состояние
 let trainingCompleted = [false, false, false, false, false, false, false];
 let trainingGrades = [0, 0, 0, 0, 0, 0, 0];
-let cheatModeEnabled = false;
 let entranceExamStatus = null;
 let entranceExamAnswer = '';
-
-const SCRIPT_URL = "https://docs.google.com/document/d/1ySNWcceQLIDYIEs0VgaG6-8cVLgc4oRoMIFR8ZXOgjM/edit?usp=sharing";
 
 // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 function updateTrainingUnlockedBlocks() {
@@ -158,101 +223,142 @@ function loadTrainingProgress() {
             }
         }
     }
-    const savedExam = localStorage.getItem(`entranceExam_${window.currentUser.phone}`);
-    if (savedExam) {
-        const exam = JSON.parse(savedExam);
-        entranceExamStatus = exam.status;
-        entranceExamAnswer = exam.answer || '';
-    } else {
-        entranceExamStatus = null;
-        entranceExamAnswer = '';
-    }
     updateTrainingUnlockedBlocks();
 }
 
-function saveEntranceExamAnswer(answer) {
-    entranceExamAnswer = answer;
-    const stats = calculateTrainingStats();
-    if (stats.completedCount === stats.total) {
-        saveTrainingProgress();
-    }
-    localStorage.setItem(`entranceExam_${window.currentUser.phone}`, JSON.stringify({ status: entranceExamStatus, answer: entranceExamAnswer }));
-}
+// ========== ТРЕНАЖЁРЫ ==========
 
-function submitEntranceExamForReview(answer) {
-    entranceExamAnswer = answer;
-    entranceExamStatus = 'pending';
-    saveTrainingProgress();
-    localStorage.setItem(`entranceExam_${window.currentUser.phone}`, JSON.stringify({ status: entranceExamStatus, answer: entranceExamAnswer }));
-}
-
-// ========== ВСТУПИТЕЛЬНЫЙ ЭКЗАМЕН ==========
-function openEntranceExamModal() {
+// 1. Ценообразование (3 кейса)
+function openPricingTrainer(modalToClose) {
+    let step = 0;
+    const cases = [
+        { title: "Кейс 1: Повышение на 1 пункт", desc: "Клиент просит скидку 500₽. Как ответить?", options: ["Дать скидку", "Предложить упаковку в подарок", "Сказать, что цена фиксированная"], correct: 1, explanation: "Лучше предложить бонус, чем просто скидку — сохраняешь маржу." },
+        { title: "Кейс 2: Повышение на 2 пункта", desc: "Срочная заявка через 2 часа. На сколько повысить цену?", options: ["+0%", "+20%", "+50%"], correct: 1, explanation: "Срочность = повышение на 20-30%." },
+        { title: "Кейс 3: Понижение на 3 пункта", desc: "Долгая заявка без нагрузки. Как поступить?", options: ["Сделать скидку 15%", "Не брать заявку", "Оставить цену без изменений"], correct: 0, explanation: "Лучше сделать небольшую скидку, чем терять заявку." }
+    ];
+    
     const modal = document.createElement('div');
     modal.className = 'modal';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width:700px; width:100%;">
-            <h2 style="margin-bottom:20px;">🎓 Вступительный экзамен</h2>
-            <div style="background:#fef9e3; border-radius:16px; padding:20px; margin-bottom:20px;">
-                <p style="font-size:16px; margin-bottom:16px;"><strong>📋 Ситуация:</strong></p>
-                <p style="margin-bottom:16px;">Клиент звонит и говорит: «Мне нужно перевезти пианино из квартиры на первом этаже в другую квартиру тоже на первом этаже. Расстояние 5 км. У вас цена 5000 рублей, а в другой фирме мне назвали 3500. Почему у вас дороже?»</p>
-                <p style="font-weight:600; margin-bottom:12px;">❓ Вопрос:</p>
-                <p>Опишите, как вы ответите клиенту, чтобы аргументировать цену и не потерять заявку.</p>
-            </div>
-            <div style="margin-bottom:20px;">
-                <label style="font-weight:600; display:block; margin-bottom:8px;">✏️ Ваш ответ:</label>
-                <textarea id="examAnswer" rows="6" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:16px; font-size:14px;" placeholder="Опишите свои действия и аргументы...">${entranceExamAnswer || ''}</textarea>
-            </div>
-            <div style="display:flex; gap:12px; justify-content:flex-end;">
-                <button id="submitExamBtn" class="btn-success" style="padding:12px 24px;">📨 Отправить на проверку</button>
-                <button id="closeExamBtn" class="btn-outline">Закрыть</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
     
-    modal.querySelector('#submitExamBtn').onclick = () => {
-        const answer = modal.querySelector('#examAnswer').value.trim();
-        if (!answer) {
-            showToast("⚠️ Пожалуйста, напишите ответ перед отправкой");
-            return;
-        }
-        submitEntranceExamForReview(answer);
-        modal.remove();
-        showToast("📨 Экзамен отправлен на проверку администратору!");
-        renderTrainingModule();
-    };
-    modal.querySelector('#closeExamBtn').onclick = () => modal.remove();
-}
-
-function getEntranceExamButtonHtml() {
-    const stats = calculateTrainingStats();
-    const allCompleted = stats.completedCount === stats.total;
-    
-    if (!allCompleted) {
-        return '<div style="margin-top:20px; padding:16px; background:#f1f5f9; border-radius:16px; text-align:center; color:#64748b;">🎯 Сначала пройдите все блоки обучения</div>';
+    function renderCase() {
+        const c = cases[step];
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>💰 Ценообразование — ${c.title}</h3>
+                <div style="margin:20px 0"><strong>Ситуация:</strong> ${c.desc}</div>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    ${c.options.map((opt, idx) => `<button class="btn-opt" data-opt="${idx}" style="padding:12px; border-radius:16px; border:1px solid #cbd5e1; background:white; cursor:pointer;">${opt}</button>`).join('')}
+                </div>
+                <div id="explanation" style="margin-top:20px; padding:12px; border-radius:12px; display:none;"></div>
+                <div style="margin-top:24px;"><button id="nextBtn" class="btn-primary" style="display:none;">Следующий кейс →</button></div>
+                <button class="btn-outline" id="closePricingBtn" style="margin-top:16px;">Закрыть</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        document.querySelectorAll('.btn-opt').forEach(btn => {
+            btn.onclick = () => {
+                const selected = parseInt(btn.dataset.opt);
+                const isCorrect = (selected === c.correct);
+                const explDiv = modal.querySelector('#explanation');
+                explDiv.style.display = 'block';
+                explDiv.style.background = isCorrect ? '#dcfce7' : '#fee2e2';
+                explDiv.innerHTML = `<strong>${isCorrect ? '✅ Правильно!' : '❌ Неверно'}</strong><br>${c.explanation}`;
+                document.querySelectorAll('.btn-opt').forEach(b => b.disabled = true);
+                modal.querySelector('#nextBtn').style.display = 'block';
+            };
+        });
+        
+        modal.querySelector('#nextBtn').onclick = () => {
+            step++;
+            if (step < cases.length) {
+                modal.remove();
+                renderCase();
+            } else {
+                bpBlocks[1].trainerPassed = true;
+                saveTrainingProgress();
+                modal.remove();
+                if (modalToClose) modalToClose.remove();
+                showToast("🎉 Тренажёр по ценообразованию пройден!");
+                openExamModal(1);
+            }
+        };
+        modal.querySelector('#closePricingBtn').onclick = () => modal.remove();
     }
+    renderCase();
+}
+
+// 2. Составление заявки (6 кейсов + ценообразование)
+function openOrderTypesTrainer(modalToClose) {
+    const orderTypes = bpBlocks[2].orderTypes;
+    let currentIndex = 0;
+    const cityMinPrice = 3500;
     
-    if (entranceExamStatus === 'accepted') {
-        return '<div style="margin-top:20px; padding:16px; background:#dcfce7; border-radius:16px; text-align:center; color:#15803d;">✅ Вступительный экзамен: ПРИНЯТ! Вы можете переходить к адаптации.</div>';
-    } else if (entranceExamStatus === 'rejected') {
-        return '<div style="margin-top:20px; padding:16px; background:#fee2e2; border-radius:16px; text-align:center; color:#b91c1c;">❌ Вступительный экзамен: НЕ ПРИНЯТ. Попробуйте ещё раз.</div>';
-    } else if (entranceExamStatus === 'pending') {
-        return '<div style="margin-top:20px; padding:16px; background:#fef9e3; border-radius:16px; text-align:center;">⏳ Вступительный экзамен на проверке. Ожидайте решения администратора.</div>';
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    function renderOrder() {
+        const order = orderTypes[currentIndex];
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>📋 Составление заявки: ${order.title}</h3>
+                <div style="margin:16px 0"><strong>Описание:</strong> ${order.desc}</div>
+                <div style="margin:16px 0"><strong>💰 Стартовая цена (по городу):</strong> от ${cityMinPrice} ₽</div>
+                <div style="margin:16px 0">
+                    <label><strong>Укажите итоговую цену для клиента:</strong></label>
+                    <input type="number" id="priceInput" value="${order.basePrice}" style="width:100%; padding:10px; margin-top:8px; border-radius:12px; border:1px solid #cbd5e1;">
+                </div>
+                <div id="feedback" style="margin-top:16px; padding:12px; border-radius:12px; display:none;"></div>
+                <div style="margin-top:24px; display:flex; gap:12px; justify-content:space-between;">
+                    <button id="checkPriceBtn" class="btn-primary">Проверить цену</button>
+                    <button id="nextOrderBtn" class="btn-primary" style="display:none;">Следующая заявка →</button>
+                </div>
+                <button class="btn-outline" id="closeOrderBtn" style="margin-top:16px;">Закрыть</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.querySelector('#checkPriceBtn').onclick = () => {
+            const price = parseInt(modal.querySelector('#priceInput').value);
+            const feedback = modal.querySelector('#feedback');
+            const minPercent = Math.round((cityMinPrice / price) * 100);
+            if (price >= order.basePrice) {
+                feedback.style.display = 'block';
+                feedback.style.background = '#dcfce7';
+                feedback.innerHTML = `✅ Отличная цена! (${price} ₽)<br>• Минималка по городу: ${cityMinPrice} ₽ (${minPercent}% от вашей цены)<br>• Рекомендуемая стартовая: от ${order.basePrice} ₽`;
+            } else if (price >= cityMinPrice) {
+                feedback.style.display = 'block';
+                feedback.style.background = '#fef9e3';
+                feedback.innerHTML = `⚠️ Цена ${price} ₽ — приемлемо, но вы могли бы взять выше.<br>• Минималка по городу: ${cityMinPrice} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
+            } else {
+                feedback.style.display = 'block';
+                feedback.style.background = '#fee2e2';
+                feedback.innerHTML = `❌ Цена ${price} ₽ — ниже минимальной по городу!<br>• Минималка: ${cityMinPrice} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
+            }
+            modal.querySelector('#checkPriceBtn').disabled = true;
+            modal.querySelector('#nextOrderBtn').style.display = 'block';
+        };
+        
+        modal.querySelector('#nextOrderBtn').onclick = () => {
+            currentIndex++;
+            if (currentIndex < orderTypes.length) {
+                modal.remove();
+                renderOrder();
+            } else {
+                bpBlocks[2].trainerPassed = true;
+                saveTrainingProgress();
+                modal.remove();
+                if (modalToClose) modalToClose.remove();
+                showToast("🎉 Тренажёр по составлению заявок пройден!");
+                openExamModal(2);
+            }
+        };
+        modal.querySelector('#closeOrderBtn').onclick = () => modal.remove();
     }
-    
-    return `<button id="entranceExamBtn" class="btn-primary" style="margin-top:20px; width:100%; padding:14px; font-size:16px;">🎓 Пройти вступительный экзамен</button>`;
+    renderOrder();
 }
 
-function showToast(msg) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerText = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
-}
-
-// ========== ТРЕНАЖЁРЫ ==========
+// 3. Приём обращения (старый тренажёр, но в модалку добавим текст сценария)
 function openTrainerBlock0(modalToClose) {
     const modal = document.createElement('div'); modal.className = 'modal';
     let stepsDone = { phone: false, comment: false, order: false };
@@ -261,6 +367,10 @@ function openTrainerBlock0(modalToClose) {
         if (allDone) { modal.querySelector('#completeTrainerBtn').disabled = false; modal.querySelector('#completeTrainerBtn').style.opacity = '1'; }
     }
     modal.innerHTML = `<div class="modal-content"><h3>🎮 Тренажёр: Приём обращения</h3>
+        <div style="background:#fef9e3; padding:16px; border-radius:16px; margin-bottom:20px;">
+            <strong>📺 Видео-сценарий скоро будет добавлен</strong><br>
+            А пока потренируйся на этом тренажёре.
+        </div>
         <div class="instruction-steps"><div class="step" id="step1"><div class="step-check"></div><div class="step-text">📞 1. Возьми трубку</div></div>
         <div class="step" id="step2"><div class="step-check"></div><div class="step-text">✏️ 2. Заполни комментарий</div></div>
         <div class="step" id="step3"><div class="step-check"></div><div class="step-text">✅ 3. Нажми «Создать заявку»</div></div></div>
@@ -273,24 +383,22 @@ function openTrainerBlock0(modalToClose) {
     modal.querySelector('#phoneBtn').onclick = () => { stepsDone.phone = true; modal.querySelector('#step1 .step-check').classList.add('done'); modal.querySelector('#step1 .step-text').classList.add('done'); updateSteps(); showToast("✅ Трубка взята!"); };
     modal.querySelector('#commentInput').oninput = (e) => { if (e.target.value.trim()) { stepsDone.comment = true; modal.querySelector('#step2 .step-check').classList.add('done'); modal.querySelector('#step2 .step-text').classList.add('done'); updateSteps(); showToast("✅ Комментарий добавлен!"); } };
     modal.querySelector('#orderBtn').onclick = () => { if (stepsDone.phone && stepsDone.comment) { stepsDone.order = true; modal.querySelector('#step3 .step-check').classList.add('done'); modal.querySelector('#step3 .step-text').classList.add('done'); updateSteps(); showToast("✅ Заявка создана!"); } else { showToast("⚠️ Сначала возьми трубку и заполни комментарий!"); } };
-    modal.querySelector('#completeTrainerBtn').onclick = () => {
-        bpBlocks[0].trainerPassed = true;
-        saveTrainingProgress();
-        modal.remove();
-        if (modalToClose) modalToClose.remove();
-        showToast("🎉 Тренажёр пройден! Теперь доступен экзамен.");
-        openExamModal(0);
-    };
+    modal.querySelector('#completeTrainerBtn').onclick = () => { if (stepsDone.phone && stepsDone.comment && stepsDone.order) { bpBlocks[0].trainerPassed = true; saveTrainingProgress(); modal.remove(); if (modalToClose) modalToClose.remove(); showToast("🎉 Тренажёр пройден! Теперь доступен экзамен."); openExamModal(0); } };
     modal.querySelector('#closeTrainerBtn').onclick = () => modal.remove();
 }
 
-function openTrainerBlock2(modalToClose) {  // теперь блок 2 (Составление заявки)
+function openTrainerBlock2(modalToClose) {
+    // старый тренажёр составления заявки — оставляем как есть, но теперь есть альтернатива
     const modal = document.createElement('div'); modal.className = 'modal';
     let fieldsDone = { city: false, name: false, work: false, price: false, address: false, datetime: false };
     function checkAllDone() {
         if (Object.values(fieldsDone).every(v=>v===true)) { modal.querySelector('#completeTrainerBtn').disabled = false; modal.querySelector('#completeTrainerBtn').style.opacity = '1'; }
     }
     modal.innerHTML = `<div class="modal-content"><h3>🎮 Тренажёр: Составление заявки</h3>
+        <div style="background:#fef9e3; padding:16px; border-radius:16px; margin-bottom:20px;">
+            <strong>📺 Видео-сценарий скоро будет добавлен</strong><br>
+            А пока пройди этот тренажёр.
+        </div>
         <div class="material-section"><div class="section-title">🎧 Аудиоразговор с клиентом</div>
         <audio controls style="width:100%; margin-bottom:10px;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio></div>
         <div class="instruction-steps"><div class="step" id="step1"><div class="step-check"></div><div class="step-text">🏙️ Город</div></div><div class="step" id="step2"><div class="step-check"></div><div class="step-text">👤 Имя клиента</div></div>
@@ -299,7 +407,7 @@ function openTrainerBlock2(modalToClose) {  // теперь блок 2 (Сост
         <div class="crm-mock"><div class="form-field"><label>Город</label><select id="citySelect"><option value="">Выберите</option><option>Москва</option><option>СПБ</option></select></div>
         <div class="form-field"><label>Имя клиента</label><input type="text" id="clientName" placeholder="Иван"></div>
         <div class="form-field"><label>Фронт работ</label><textarea id="workDesc" rows="2"></textarea></div>
-        <div class="form-field"><label>Цена (руб/час)</label><input type="number" id="price" placeholder="500"></div>
+        <div class="form-field"><label>Цена (руб/час)</label><input type="number" id="price}" placeholder="500"></div>
         <div class="form-field"><label>Адрес</label><input type="text" id="address" placeholder="ул. Ленина, 10"></div>
         <div class="form-field"><label>Дата и время</label><input type="datetime-local" id="datetime"></div></div>
         <div style="margin-top:24px; text-align:right;"><button id="completeTrainerBtn" class="btn-primary" disabled style="opacity:0.5;">✅ Завершить</button>
@@ -317,20 +425,11 @@ function openTrainerBlock2(modalToClose) {  // теперь блок 2 (Сост
             }
         });
     });
-    modal.querySelector('#completeTrainerBtn').onclick = () => {
-        if (Object.values(fieldsDone).every(v=>v===true)) {
-            bpBlocks[2].trainerPassed = true;
-            saveTrainingProgress();
-            modal.remove();
-            if (modalToClose) modalToClose.remove();
-            showToast("🎉 Тренажёр пройден! Теперь доступен экзамен.");
-            openExamModal(2);
-        }
-    };
+    modal.querySelector('#completeTrainerBtn').onclick = () => { if (Object.values(fieldsDone).every(v=>v===true)) { bpBlocks[2].trainerPassed = true; saveTrainingProgress(); modal.remove(); if (modalToClose) modalToClose.remove(); showToast("🎉 Тренажёр пройден! Теперь доступен экзамен."); openExamModal(2); } };
     modal.querySelector('#closeTrainerBtn').onclick = () => modal.remove();
 }
 
-function openTrainerBlock3(modalToClose) {  // блок 3 (Назначение исполнителя)
+function openTrainerBlock3(modalToClose) {
     const workers = [
         { id: 1, name: "Сергей", egu: "Еду 1", people: 1, taken: 30, done: 21, percent: 70 },
         { id: 2, name: "Антон", egu: "Еду 1", people: 1, taken: 22, done: 15, percent: 68 },
@@ -366,6 +465,13 @@ function openTrainerBlock3(modalToClose) {  // блок 3 (Назначение 
         else { completeBtn.disabled = true; completeBtn.style.opacity = '0.5'; }
     }
     modal.innerHTML = `<div class="modal-content"><h3>🎮 Тренажёр: Назначение исполнителя</h3>
+        <div style="background:#fef9e3; padding:16px; border-radius:16px; margin-bottom:20px;">
+            <strong>📺 Видео-сценарий о рейтинге (3/1/33%):</strong><br>
+            • 3 — сколько заявок взял<br>
+            • 1 — на сколько заявок вышел<br>
+            • 33% — процент брака (невыхода)<br>
+            Также комментарии грузчику и возможность принимать заявки на «Еду 2».
+        </div>
         <div class="material-section"><div class="section-title">📋 Задание</div><p><strong>Для перевозки пианино нужно 4 человека.</strong> Выберите водителей так, чтобы суммарно они предоставили ровно 4 человека, отдавая приоритет тем, у кого выше процент выполненных заказов.</p></div>
         <div class="trainer-header"><div class="selected-counter">👥 Выбрано человек: <span id="peopleCounter">0</span> / 4</div></div>
         <div id="workersList"></div>
@@ -373,32 +479,13 @@ function openTrainerBlock3(modalToClose) {  // блок 3 (Назначение 
         <button id="closeTrainerBtn" class="btn-primary" style="background:#e2e8f0; color:#1e293b; margin-top:12px;">Закрыть</button></div>`;
     document.body.appendChild(modal);
     renderList(); updateComplete();
-    modal.querySelector('#completeTrainerBtn').onclick = () => {
-        bpBlocks[3].trainerPassed = true;
-        saveTrainingProgress();
-        modal.remove();
-        if (modalToClose) modalToClose.remove();
-        showToast("🎉 Тренажёр пройден! Теперь доступен экзамен.");
-        openExamModal(3);
-    };
+    modal.querySelector('#completeTrainerBtn').onclick = () => { bpBlocks[3].trainerPassed = true; saveTrainingProgress(); modal.remove(); if (modalToClose) modalToClose.remove(); showToast("🎉 Тренажёр пройден! Теперь доступен экзамен."); openExamModal(3); };
     modal.querySelector('#closeTrainerBtn').onclick = () => modal.remove();
 }
 
-// ========== ЭКЗАМЕН ==========
+// ========== ЭКЗАМЕНЫ ==========
 function openExamModal(blockIdx) {
     const block = bpBlocks[blockIdx];
-    
-    // Если блок с простым прохождением (Ценообразование)
-    if (block.simpleComplete) {
-        trainingCompleted[blockIdx] = true;
-        trainingGrades[blockIdx] = 5;
-        saveTrainingProgress();
-        updateTrainingUnlockedBlocks();
-        renderTrainingModule();
-        showToast(`✅ Блок "${block.title}" пройден!`);
-        return;
-    }
-    
     const modal = document.createElement('div');
     modal.className = 'modal';
     
@@ -415,7 +502,6 @@ function openExamModal(blockIdx) {
             <div id="examResult"></div>
         </div>`;
         document.body.appendChild(modal);
-        
         modal.querySelector('#submitExam').onclick = () => {
             trainingCompleted[blockIdx] = true;
             trainingGrades[blockIdx] = 5;
@@ -429,7 +515,7 @@ function openExamModal(blockIdx) {
     }
     
     let qHtml = '';
-    if (block.questions) {
+    if (block.questions && block.questions.length) {
         block.questions.forEach((q, idx) => {
             qHtml += `<div class="exam-question"><p><strong>${idx+1}. ${q.text}</strong></p>`;
             q.options.forEach((opt, optIdx) => {
@@ -455,7 +541,6 @@ function openExamModal(blockIdx) {
             const selected = modal.querySelector(`input[name="q${idx}"]:checked`);
             if (selected && parseInt(selected.value) === q.correct) correct++;
         });
-        
         if (correct === 5) {
             trainingCompleted[blockIdx] = true;
             trainingGrades[blockIdx] = 5;
@@ -473,45 +558,15 @@ function openExamModal(blockIdx) {
 
 function openStudyModal(blockIdx) {
     const block = bpBlocks[blockIdx];
-    
     if (block.finalMessage) {
         openExamModal(blockIdx);
         return;
     }
-    
-    // Простое прохождение для Ценообразования
-    if (block.simpleComplete && !trainingCompleted[blockIdx]) {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content" style="text-align:center;">
-                <h2>💰 Ценообразование</h2>
-                <p style="margin:20px 0;">Здесь будет видео-обучение по ценообразованию.</p>
-                <button id="completeSimpleBtn" class="btn-success">✅ Пройдено</button>
-                <button class="btn-outline" id="closeBtn" style="margin-top:12px;">Закрыть</button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        modal.querySelector('#completeSimpleBtn').onclick = () => {
-            trainingCompleted[blockIdx] = true;
-            trainingGrades[blockIdx] = 5;
-            saveTrainingProgress();
-            updateTrainingUnlockedBlocks();
-            renderTrainingModule();
-            modal.remove();
-            showToast("✅ Блок пройден!");
-        };
-        modal.querySelector('#closeBtn').onclick = () => modal.remove();
-        return;
-    }
-    
     if (!block.isUnlocked && !block.isFinal) {
         showToast("Сначала сдайте предыдущий блок на 5!");
         return;
     }
-    
     const isAlreadyCompleted = trainingCompleted[blockIdx];
-    
     const modal = document.createElement('div');
     modal.className = 'modal';
     const audioHtml = block.audio ? `<audio controls src="${block.audio}" style="width:100%;"></audio>` : '<p>🎧 Аудио будет позже</p>';
@@ -519,7 +574,8 @@ function openStudyModal(blockIdx) {
     let trainerBtnHtml = '';
     if (block.hasTrainer && !block.trainerPassed && !isAlreadyCompleted) {
         if (blockIdx === 0) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
-        else if (blockIdx === 2) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
+        else if (blockIdx === 1) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр (ценообразование)</button>`;
+        else if (blockIdx === 2) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр (заявки + цены)</button>`;
         else if (blockIdx === 3) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
     } else if (block.hasTrainer && (block.trainerPassed || isAlreadyCompleted)) {
         trainerBtnHtml = '<span class="badge-success" style="display:inline-block; padding:8px 16px;">✅ Тренажёр пройден</span>';
@@ -534,9 +590,27 @@ function openStudyModal(blockIdx) {
         examSection = '<p style="text-align:center;">🔒 Сначала пройдите тренажёр</p>';
     }
     
+    let extraContent = '';
+    if (block.videoScript) {
+        extraContent += `<div class="material-section" style="margin-bottom:16px;background:#fef9e3;">
+            <div style="white-space:pre-wrap;">${block.videoScript}</div>
+        </div>`;
+    }
+    if (block.ratingVideoScript) {
+        extraContent += `<div class="material-section" style="margin-bottom:16px;background:#fef9e3;">
+            <div style="white-space:pre-wrap;">${block.ratingVideoScript}</div>
+        </div>`;
+    }
+    if (block.readinessVideoScript) {
+        extraContent += `<div class="material-section" style="margin-bottom:16px;background:#fef9e3;">
+            <div style="white-space:pre-wrap;">${block.readinessVideoScript}</div>
+        </div>`;
+    }
+    
     modal.innerHTML = `
     <div class="modal-content" style="max-width:600px; width:100%;">
         <h3 style="margin-bottom:20px;">${block.title}</h3>
+        ${extraContent}
         <div class="material-section" style="background:#fef9e3; margin-bottom:16px;">
             <div><strong>🎯 ЦЕЛЬ:</strong> ${block.goal}</div>
             <div style="margin-top:8px;"><strong>⚠️ ОБЯЗАТЕЛЬНО:</strong> ${block.mandatory}</div>
@@ -557,7 +631,6 @@ function openStudyModal(blockIdx) {
             <button class="btn-outline" id="closeBtn" style="padding:8px 24px;">Закрыть</button>
         </div>
     </div>`;
-    
     document.body.appendChild(modal);
     
     if (block.hasTrainer && !block.trainerPassed && !isAlreadyCompleted) {
@@ -565,7 +638,8 @@ function openStudyModal(blockIdx) {
         if (trainerBtn) {
             trainerBtn.onclick = () => {
                 if (blockIdx === 0) openTrainerBlock0(modal);
-                else if (blockIdx === 2) openTrainerBlock2(modal);
+                else if (blockIdx === 1) openPricingTrainer(modal);
+                else if (blockIdx === 2) openOrderTypesTrainer(modal);
                 else if (blockIdx === 3) openTrainerBlock3(modal);
                 else {
                     bpBlocks[blockIdx].trainerPassed = true;
@@ -599,92 +673,3 @@ function completeBlockViaCheat(blockId) {
         showToast(`⚡ Блок "${bpBlocks[blockId].title}" пройден`);
     }
 }
-
-// ========== ОТРИСОВКА МОДУЛЯ ОБУЧЕНИЯ ==========
-function renderTrainingModule() {
-    const container = document.getElementById('trackContent');
-    if (!container) return;
-    
-    const stats = calculateTrainingStats();
-    const percent = (stats.completedCount / stats.total) * 100;
-    let blocksHtml = '';
-    
-    for (let i = 0; i < bpBlocks.length; i++) {
-        const b = bpBlocks[i];
-        const isCompleted = trainingCompleted[i];
-        const isUnlocked = b.isUnlocked || (b.isFinal && b.isUnlocked);
-        const grade = trainingGrades[i];
-        const cheatMark = cheatModeEnabled ? `<div class="cheat-mark" data-idx="${i}">✓</div>` : '';
-        
-        let statusText = '';
-        if (isCompleted) statusText = '✅ Изучен';
-        else if (isUnlocked) statusText = '📖 Доступен';
-        else if (b.isFinal) statusText = '🏆 Финал';
-        else statusText = '🔒 Закрыт';
-        
-        blocksHtml += `<div class="bp-block-card ${isCompleted ? 'completed' : ''} ${!isUnlocked && !isCompleted ? 'locked-block' : ''}" data-idx="${i}">
-            ${cheatMark}
-            <div class="bp-card-title">${b.title}</div>
-            <div class="bp-card-desc">${b.desc}</div>
-            <div class="bp-card-status">
-                <span class="badge ${isCompleted ? 'badge-success' : (isUnlocked ? 'badge-warning' : 'badge-secondary')}">
-                    ${statusText}
-                </span>
-                ${grade > 0 ? `<span>🎓 ${grade}/5</span>` : ''}
-            </div>
-        </div>`;
-    }
-    
-    container.innerHTML = `<div class="training-layout">
-        <div class="bp-sidebar">
-            ${cheatModeEnabled ? '<div class="cheat-checkbox">⚡ Cheat mode ВКЛЮЧЁН</div>' : ''}
-            <div class="bp-block-list">${blocksHtml}</div>
-        </div>
-        <div class="progress-sidebar">
-            <div class="progress-stats"><h4>📊 Прогресс</h4><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${percent}%"></div></div><p>${stats.completedCount} из ${stats.total} блоков</p></div>
-            <div class="grade-box"><div>🏆 Средняя оценка</div><div class="grade-number">${stats.avgGrade} / 5</div></div>
-            ${getEntranceExamButtonHtml()}
-        </div>
-    </div>`;
-    
-    document.querySelectorAll('.bp-block-card').forEach(card => {
-        card.onclick = (e) => {
-            if (e.target.classList.contains('cheat-mark')) return;
-            const idx = parseInt(card.dataset.idx);
-            openStudyModal(idx);
-        };
-    });
-    
-    if (cheatModeEnabled) {
-        document.querySelectorAll('.cheat-mark').forEach(mark => {
-            mark.onclick = (e) => {
-                e.stopPropagation();
-                const idx = parseInt(mark.dataset.idx);
-                completeBlockViaCheat(idx);
-            };
-        });
-    }
-    
-    const entranceExamBtn = document.getElementById('entranceExamBtn');
-    if (entranceExamBtn) {
-        entranceExamBtn.onclick = () => openEntranceExamModal();
-    }
-}
-
-function showTraining() {
-    document.getElementById('modulesGrid').style.display = 'none';
-    document.getElementById('backToModulesBtn').style.display = 'inline-block';
-    loadTrainingProgress();
-    renderTrainingModule();
-}
-
-window.enableCheatMode = () => {
-    cheatModeEnabled = true;
-    showToast("⚡ Cheat mode включён!");
-    if (document.getElementById('trackContent').innerHTML) renderTrainingModule();
-};
-
-window.showTraining = showTraining;
-window.renderTrainingModule = renderTrainingModule;
-window.loadTrainingProgress = loadTrainingProgress;
-window.calculateTrainingStats = calculateTrainingStats;
