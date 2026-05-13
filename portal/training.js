@@ -671,3 +671,7 @@ function completeBlockViaCheat(blockId) {
         showToast(`⚡ Блок "${bpBlocks[blockId].title}" пройден`);
     }
 }
+// Экспорт в глобальную область для main.js
+window.showTraining = showTraining;
+window.loadTrainingProgress = loadTrainingProgress;
+window.calculateTrainingStats = calculateTrainingStats;
