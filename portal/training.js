@@ -684,7 +684,10 @@ window.enableCheatMode = () => {
     if (document.getElementById('trackContent').innerHTML) renderTrainingModule();
 };
 
+// ========== ДЕЛАЕМ ФУНКЦИИ ГЛОБАЛЬНЫМИ ==========
 window.showTraining = showTraining;
 window.renderTrainingModule = renderTrainingModule;
 window.loadTrainingProgress = loadTrainingProgress;
 window.calculateTrainingStats = calculateTrainingStats;
+
+console.log('✅ training.js глобальные функции зарегистрированы');
