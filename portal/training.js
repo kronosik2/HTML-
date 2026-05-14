@@ -716,5 +716,11 @@ window.showTraining = showTraining;
 window.renderTrainingModule = renderTrainingModule;
 window.loadTrainingProgress = loadTrainingProgress;
 window.calculateTrainingStats = calculateTrainingStats;
+// ========== CHEAT MODE ==========
+window.enableCheatMode = () => {
+    cheatModeEnabled = true;
+    showToast("⚡ Cheat mode включён! Теперь можно отмечать блоки галочками.");
+    renderTrainingModule();
+};
 
 console.log('✅ training.js загружен, глобальные функции зарегистрированы');
