@@ -1,4 +1,4 @@
-// ========== training.js - Модуль Обучения (расширенная версия с видео-сценариями) ==========
+// ========== training.js - Модуль Обучения (расширенная версия) ==========
 
 let cheatModeEnabled = false;
 
@@ -71,17 +71,18 @@ const bpBlocks = [
 🎥 **Видео-сценарий: Составление заявки**
 
 📌 **Типы заявок в тренажёре:**
-• 🛠️ Разнорабочие на смену 8-12 часов
-• 🚛 Вывоз мусора
-• ⛏️ Копка траншеи
+• 🏙️ Кострома — выгрузка
+• 🏠 Обычный переезд (Вологда)
+• 🚛 Вывоз мусора (Тюмень)
+• 🛠️ Разнорабочий на смену (Орск)
 • 🏢 Юр.клиент
-• 🏠 Обычный переезд
 • 🌲 Переезд за город
 
 📌 **Ценообразование:**
 • Стартовая цена по городу: от 3500 ₽
 • Как подсветить минималку
 • Интерактив с ценой
+• Опция «Газель» для вывоза мусора
       `,
       questions: [
           { text: "Что из перечисленного НЕ нужно указывать при составлении заявки?", options: ["Адрес", "Любимый цвет клиента", "Объём работ"], correct: 1 },
@@ -293,15 +294,54 @@ function openPricingTrainer(modalToClose) {
     renderCase();
 }
 
+// ========== ОБНОВЛЁННЫЙ ТРЕНАЖЁР СОСТАВЛЕНИЯ ЗАЯВКИ ==========
 function openOrderTypesTrainer(modalToClose) {
     const orderTypes = [
-        { title: "🛠️ Разнорабочие на смену 8-12 часов", desc: "2 человека, погрузка/разгрузка, склад", basePrice: 4000 },
-        { title: "🚛 Вывоз мусора", desc: "газель, 5 кубов, строительный мусор", basePrice: 3500 },
-        { title: "⛏️ Копка траншеи", desc: "длина 10м, глубина 1м, без техники", basePrice: 8000 },
-        { title: "🏢 Юр.клиент", desc: "офисный переезд, 15 сотрудников, 20 коробок", basePrice: 12000 },
-        { title: "🏠 Обычный переезд", desc: "2-комнатная квартира, без лифта", basePrice: 5000 },
-        { title: "🌲 Переезд за город", desc: "из города в область, дача, мебель", basePrice: 9000 }
+        { 
+            title: "🏙️ Кострома — выгрузка", 
+            desc: "Грузчики на выгрузку, 400₽/ч", 
+            basePrice: 4000, 
+            audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/kostroma-vigruzka.mp3",
+            city: "Кострома"
+        },
+        { 
+            title: "🏠 Обычный переезд", 
+            desc: "Перевозка мебели, Вологда, 500₽/ч", 
+            basePrice: 5000, 
+            audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/pereezd-vologda.mp3",
+            city: "Вологда"
+        },
+        { 
+            title: "🚛 Вывоз мусора", 
+            desc: "Тюмень, 500₽/ч + газель 4000₽", 
+            basePrice: 5000, 
+            audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/tumen-vivozmusora.mp3",
+            city: "Тюмень",
+            gazelleNeeded: true
+        },
+        { 
+            title: "🛠️ Разнорабочий на смену", 
+            desc: "Орск, 450₽/ч, смена 8ч", 
+            basePrice: 3600, 
+            audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/orsk-raznorabochii.mp3",
+            city: "Орск"
+        },
+        { 
+            title: "🏢 Юр.клиент", 
+            desc: "Офисный переезд, полный спектр услуг", 
+            basePrice: 12000, 
+            audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/ur-client.mp3",
+            city: "Москва"
+        },
+        { 
+            title: "🌲 Переезд за город", 
+            desc: "Из города в область, дача, мебель", 
+            basePrice: 9000, 
+            audio: null,
+            city: "Москва"
+        }
     ];
+    
     let currentIndex = 0;
     const cityMinPrice = 3500;
     
@@ -310,16 +350,42 @@ function openOrderTypesTrainer(modalToClose) {
     
     function renderOrder() {
         const order = orderTypes[currentIndex];
+        
+        let audioHtml = '';
+        if (order.audio) {
+            audioHtml = `
+                <div class="material-section" style="margin-bottom:16px;">
+                    <strong>🎧 Аудиопример звонка:</strong>
+                    <audio controls src="${order.audio}" style="width:100%; margin-top:8px;"></audio>
+                </div>
+            `;
+        }
+        
         modal.innerHTML = `
-            <div class="modal-content">
+            <div class="modal-content" style="max-width:650px; width:100%;">
                 <h3>📋 Составление заявки: ${order.title}</h3>
+                <div style="margin:16px 0"><strong>Город:</strong> ${order.city}</div>
                 <div style="margin:16px 0"><strong>Описание:</strong> ${order.desc}</div>
-                <div style="margin:16px 0"><strong>💰 Стартовая цена (по городу):</strong> от ${cityMinPrice} ₽</div>
+                <div style="margin:16px 0"><strong>💰 Стартовая цена (минималка по городу):</strong> от ${cityMinPrice} ₽</div>
+                
+                ${audioHtml}
+                
                 <div style="margin:16px 0">
-                    <label><strong>Укажите итоговую цену для клиента:</strong></label>
+                    <label><strong>Укажите итоговую цену для клиента (₽):</strong></label>
                     <input type="number" id="priceInput" value="${order.basePrice}" style="width:100%; padding:10px; margin-top:8px; border-radius:12px; border:1px solid #cbd5e1;">
                 </div>
+                
+                ${order.gazelleNeeded ? `
+                    <div style="margin:16px 0">
+                        <label style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+                            <input type="checkbox" id="gazelleCheckbox" style="width:20px; height:20px;">
+                            <strong>🚛 Нужна газель (+4000 ₽ к цене)</strong>
+                        </label>
+                    </div>
+                ` : ''}
+                
                 <div id="feedback" style="margin-top:16px; padding:12px; border-radius:12px; display:none;"></div>
+                
                 <div style="margin-top:24px; display:flex; gap:12px; justify-content:space-between;">
                     <button id="checkPriceBtn" class="btn-primary">Проверить цену</button>
                     <button id="nextOrderBtn" class="btn-primary" style="display:none;">Следующая заявка →</button>
@@ -327,23 +393,41 @@ function openOrderTypesTrainer(modalToClose) {
                 <button class="btn-outline" id="closeOrderBtn" style="margin-top:16px;">Закрыть</button>
             </div>
         `;
+        
         document.body.appendChild(modal);
         
+        if (order.gazelleNeeded) {
+            const gazelleCheckbox = modal.querySelector('#gazelleCheckbox');
+            const priceInput = modal.querySelector('#priceInput');
+            if (gazelleCheckbox) {
+                gazelleCheckbox.onchange = () => {
+                    let base = order.basePrice;
+                    if (gazelleCheckbox.checked) {
+                        priceInput.value = base + 4000;
+                    } else {
+                        priceInput.value = base;
+                    }
+                };
+            }
+        }
+        
         modal.querySelector('#checkPriceBtn').onclick = () => {
-            const price = parseInt(modal.querySelector('#priceInput').value);
+            let price = parseInt(modal.querySelector('#priceInput').value);
             const feedback = modal.querySelector('#feedback');
+            const minAcceptable = cityMinPrice;
+            
             if (price >= order.basePrice) {
                 feedback.style.display = 'block';
                 feedback.style.background = '#dcfce7';
-                feedback.innerHTML = `✅ Отличная цена! (${price} ₽)<br>• Минималка по городу: ${cityMinPrice} ₽<br>• Рекомендуемая стартовая: от ${order.basePrice} ₽`;
-            } else if (price >= cityMinPrice) {
+                feedback.innerHTML = `✅ Отличная цена! (${price} ₽)<br>• Минималка по городу: ${minAcceptable} ₽<br>• Рекомендуемая стартовая: от ${order.basePrice} ₽`;
+            } else if (price >= minAcceptable) {
                 feedback.style.display = 'block';
                 feedback.style.background = '#fef9e3';
-                feedback.innerHTML = `⚠️ Цена ${price} ₽ — приемлемо, но вы могли бы взять выше.<br>• Минималка по городу: ${cityMinPrice} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
+                feedback.innerHTML = `⚠️ Цена ${price} ₽ — приемлемо, но вы могли бы взять выше.<br>• Минималка по городу: ${minAcceptable} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
             } else {
                 feedback.style.display = 'block';
                 feedback.style.background = '#fee2e2';
-                feedback.innerHTML = `❌ Цена ${price} ₽ — ниже минимальной по городу!<br>• Минималка: ${cityMinPrice} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
+                feedback.innerHTML = `❌ Цена ${price} ₽ — ниже минимальной по городу!<br>• Минималка: ${minAcceptable} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
             }
             modal.querySelector('#checkPriceBtn').disabled = true;
             modal.querySelector('#nextOrderBtn').style.display = 'block';
@@ -363,8 +447,10 @@ function openOrderTypesTrainer(modalToClose) {
                 openExamModal(2);
             }
         };
+        
         modal.querySelector('#closeOrderBtn').onclick = () => modal.remove();
     }
+    
     renderOrder();
 }
 
@@ -553,7 +639,6 @@ function openStudyModal(blockIdx) {
         examSection = '<p style="text-align:center;">🔒 Сначала пройдите тренажёр</p>';
     }
     
-    // Видео-сценарий (чёрный блок, как в CRM)
     let videoScriptHtml = '';
     if (block.videoScript) {
         videoScriptHtml = `
@@ -716,7 +801,7 @@ window.showTraining = showTraining;
 window.renderTrainingModule = renderTrainingModule;
 window.loadTrainingProgress = loadTrainingProgress;
 window.calculateTrainingStats = calculateTrainingStats;
-// ========== CHEAT MODE ==========
+
 window.enableCheatMode = () => {
     cheatModeEnabled = true;
     showToast("⚡ Cheat mode включён! Теперь можно отмечать блоки галочками.");
