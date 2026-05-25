@@ -12,7 +12,7 @@ function showToast(msg) {
 
 const SCRIPT_URL = "https://docs.google.com/document/d/1ySNWcceQLIDYIEs0VgaG6-8cVLgc4oRoMIFR8ZXOgjM/edit?usp=sharing";
 
-// ========== БЛОКИ ОБУЧЕНИЯ (с видео-сценариями) ==========
+// ========== БЛОКИ ОБУЧЕНИЯ ==========
 const bpBlocks = [
     { id: 0, title: "📞 Приём обращения", desc: "Звонок / заявка с сайта / мессенджер", isUnlocked: true,
       goal: "Обработать обращение мгновенно! Шанс продажи увеличивается в 2 раза, если ответить в течение 10 секунд.",
@@ -52,24 +52,27 @@ const bpBlocks = [
       `,
       questions: [] },
     { id: 2, title: "📝 Составление заявки", desc: "Фиксируем адрес, объём, дату, цену", isUnlocked: false,
-      goal: "Научиться составлять заявку на основе аудиопримеров.",
-      mandatory: "Прослушай аудио, заполни все поля и выбери газель, если нужно.",
-      result: "Правильно оформленная заявка.",
-      tools: "Калькулятор + CRM",
+      goal: "Оформить заявку верно, без ошибок.",
+      mandatory: "Обязательно уточняй детали по работам. Нужно верно передать информацию исполнителям!",
+      result: "Оформленная заявка (правильное описание, верный адрес, нужное время!)",
+      tools: "CRM + твоя внимательность",
       audio: null, hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
-      // Короткое руководство для блока (будет отображаться вместо аудио и скрипта)
-      shortGuide: `
-📌 **Как пользоваться тренажёром:**
+      videoScript: `
+🎥 **Видео-сценарий: Составление заявки**
 
-1️⃣ Нажми **«Пройти тренажёр»** ниже.
-2️⃣ В тренажёре появится **город и описание заявки**.
-3️⃣ Прослушай **аудиопример звонка**.
-4️⃣ **Заполни все поля:** адрес, дату, время, цену.
-5️⃣ Если в заявке нужна **газель** — поставь галочку.
-6️⃣ Нажми **«Проверить цену»** и получи обратную связь.
-7️⃣ Пройди **все 6 заявок**, чтобы завершить блок.
+📌 **Типы заявок в тренажёре:**
+• 🏙️ Кострома — выгрузка
+• 🏠 Обычный переезд (Вологда)
+• 🚛 Вывоз мусора (Тюмень)
+• 🛠️ Разнорабочий на смену (Орск)
+• 🏢 Юр.клиент
+• 🌲 Переезд за город
 
-🎯 **Цель:** научиться правильно составлять заявки на основе реальных звонков.
+📌 **Ценообразование:**
+• Стартовая цена по городу: от 3500 ₽
+• Как подсветить минималку
+• Интерактив с ценой
+• Опция «Газель» для вывоза мусора
       `,
       questions: [
           { text: "Что из перечисленного НЕ нужно указывать при составлении заявки?", options: ["Адрес", "Любимый цвет клиента", "Объём работ"], correct: 1 },
@@ -276,8 +279,33 @@ function openPricingTrainer(modalToClose) {
     renderCase();
 }
 
-// ========== ОБНОВЛЁННЫЙ ТРЕНАЖЁР СОСТАВЛЕНИЯ ЗАЯВКИ (полная форма) ==========
+// ========== ТРЕНАЖЁР СОСТАВЛЕНИЯ ЗАЯВКИ (с инструкцией первым окном) ==========
 function openOrderTypesTrainer(modalToClose) {
+    // Сначала показываем инструкцию
+    const instructionModal = document.createElement('div');
+    instructionModal.className = 'modal';
+    instructionModal.innerHTML = `
+        <div class="modal-content" style="max-width:500px; text-align:center;">
+            <h3>📋 Как пользоваться тренажёром</h3>
+            <div style="margin:20px 0; text-align:left;">
+                <p>1️⃣ Прослушай аудиозапись звонка</p>
+                <p>2️⃣ Заполни адрес, дату и время</p>
+                <p>3️⃣ Укажи цену (с учётом газели, если нужно)</p>
+                <p>4️⃣ Нажми «Проверить заявку»</p>
+                <p>5️⃣ Пройди все 6 заявок</p>
+            </div>
+            <button id="startTrainerBtn" class="btn-success" style="padding:10px 32px;">🎯 Приступить</button>
+        </div>
+    `;
+    document.body.appendChild(instructionModal);
+    
+    instructionModal.querySelector('#startTrainerBtn').onclick = () => {
+        instructionModal.remove();
+        startOrderTrainer(modalToClose);
+    };
+}
+
+function startOrderTrainer(modalToClose) {
     const orderTypes = [
         { 
             title: "🏙️ Кострома — выгрузка", 
@@ -654,16 +682,7 @@ function openStudyModal(blockIdx) {
         examSection = '<p style="text-align:center;">🔒 Сначала пройдите тренажёр</p>';
     }
     
-    // Вместо аудио и скрипта — короткое руководство (для блока 2)
-    let guideHtml = '';
-    if (block.shortGuide) {
-        guideHtml = `
-            <div class="material-section" style="background:#eef2ff; margin-bottom:16px; border-radius:16px; padding:20px;">
-                <div style="white-space:pre-wrap;">${block.shortGuide}</div>
-            </div>
-        `;
-    }
-    
+    // Видео-сценарий (только для тех блоков, где он есть)
     let videoScriptHtml = '';
     if (block.videoScript && !block.shortGuide) {
         videoScriptHtml = `
@@ -677,7 +696,6 @@ function openStudyModal(blockIdx) {
     modal.innerHTML = `
     <div class="modal-content" style="max-width:600px; width:100%;">
         <h3 style="margin-bottom:20px;">${block.title}</h3>
-        ${guideHtml}
         ${videoScriptHtml}
         <div class="material-section" style="background:#fef9e3; margin-bottom:16px;">
             <div><strong>🎯 ЦЕЛЬ:</strong> ${block.goal}</div>
@@ -686,10 +704,6 @@ function openStudyModal(blockIdx) {
             <div style="margin-top:8px;"><strong>🛠️ ИНСТРУМЕНТЫ:</strong> ${block.tools}</div>
         </div>
         ${audioHtml ? `<div class="material-section" style="margin-bottom:16px;"><h4>🎧 Аудио</h4>${audioHtml}</div>` : ''}
-        <div class="material-section" style="margin-bottom:16px;">
-            <h4>📄 Скрипт</h4>
-            <a href="${SCRIPT_URL}" target="_blank" class="btn-primary" style="display:inline-block;">Открыть скрипт</a>
-        </div>
         ${trainerBtnHtml ? `<div class="material-section" style="margin-bottom:16px;">${trainerBtnHtml}</div>` : ''}
         <div class="material-section" style="margin-bottom:16px;">${examSection}</div>
         <div style="display:flex; justify-content:flex-end; margin-top:20px;">
