@@ -28,11 +28,6 @@ const bpBlocks = [
 • Как зайти в Zoomer (CRM)
 • Как закреплять за собой звонок
 • Что писать в комментарий к обращению
-
-📌 **Ключевые темы:**
-• Интерфейс Zoomer
-• Правила закрепления звонка
-• Структура комментария (проблема, потребность, контакты)
       `,
       questions: [
           { text: "Какова главная цель приёма обращения?", options: ["Продать сразу", "Обработать мгновенно и понять потребность", "Собрать контакты"], correct: 1 },
@@ -54,35 +49,27 @@ const bpBlocks = [
 • Повышение на 1 пункт
 • Повышение на 2 пункта
 • Понижение на 3 пункта
-
-📌 **Что тренируем:**
-• Аргументация скидки
-• Срочные заявки
-• Долгие заявки без нагрузки
       `,
       questions: [] },
     { id: 2, title: "📝 Составление заявки", desc: "Фиксируем адрес, объём, дату, цену", isUnlocked: false,
-      goal: "Оформить заявку верно, без ошибок.",
-      mandatory: "Обязательно уточняй детали по работам. Нужно верно передать информацию исполнителям!",
-      result: "Оформленная заявка (правильное описание, верный адрес, нужное время!)",
-      tools: "CRM + твоя внимательность",
+      goal: "Научиться составлять заявку на основе аудиопримеров.",
+      mandatory: "Прослушай аудио, заполни все поля и выбери газель, если нужно.",
+      result: "Правильно оформленная заявка.",
+      tools: "Калькулятор + CRM",
       audio: null, hasTrainer: true, trainerPassed: false, grade: 0, completed: false,
-      videoScript: `
-🎥 **Видео-сценарий: Составление заявки**
+      // Короткое руководство для блока (будет отображаться вместо аудио и скрипта)
+      shortGuide: `
+📌 **Как пользоваться тренажёром:**
 
-📌 **Типы заявок в тренажёре:**
-• 🏙️ Кострома — выгрузка
-• 🏠 Обычный переезд (Вологда)
-• 🚛 Вывоз мусора (Тюмень)
-• 🛠️ Разнорабочий на смену (Орск)
-• 🏢 Юр.клиент
-• 🌲 Переезд за город
+1️⃣ Нажми **«Пройти тренажёр»** ниже.
+2️⃣ В тренажёре появится **город и описание заявки**.
+3️⃣ Прослушай **аудиопример звонка**.
+4️⃣ **Заполни все поля:** адрес, дату, время, цену.
+5️⃣ Если в заявке нужна **газель** — поставь галочку.
+6️⃣ Нажми **«Проверить цену»** и получи обратную связь.
+7️⃣ Пройди **все 6 заявок**, чтобы завершить блок.
 
-📌 **Ценообразование:**
-• Стартовая цена по городу: от 3500 ₽
-• Как подсветить минималку
-• Интерактив с ценой
-• Опция «Газель» для вывоза мусора
+🎯 **Цель:** научиться правильно составлять заявки на основе реальных звонков.
       `,
       questions: [
           { text: "Что из перечисленного НЕ нужно указывать при составлении заявки?", options: ["Адрес", "Любимый цвет клиента", "Объём работ"], correct: 1 },
@@ -104,10 +91,6 @@ const bpBlocks = [
 • 3 — сколько заявок взял
 • 1 — на сколько заявок вышел
 • 33% — процент брака (невыхода на заявку)
-
-📌 **Дополнительно:**
-• Комментарии грузчику
-• Возможность принимать заявку на «Еду 2»
       `,
       questions: [
           { text: "Какой процент выполненных заказов считается надёжным?", options: ["Более 50%", "Более 75%", "100%"], correct: 1 },
@@ -129,7 +112,6 @@ const bpBlocks = [
 • Что такое «готовность» и как её подтверждают исполнители
 • Что значит готовность для заявки
 • Зачем звонить заказчику до начала заявки
-• Как подтверждать актуальность работы
       `,
       questions: [
           { text: "Что нужно сделать за час до выезда исполнителей?", options: ["Позвонить и подтвердить выход", "Отправить смс-уведомление", "Ничего, они сами приедут"], correct: 0 },
@@ -294,7 +276,7 @@ function openPricingTrainer(modalToClose) {
     renderCase();
 }
 
-// ========== ОБНОВЛЁННЫЙ ТРЕНАЖЁР СОСТАВЛЕНИЯ ЗАЯВКИ ==========
+// ========== ОБНОВЛЁННЫЙ ТРЕНАЖЁР СОСТАВЛЕНИЯ ЗАЯВКИ (полная форма) ==========
 function openOrderTypesTrainer(modalToClose) {
     const orderTypes = [
         { 
@@ -302,14 +284,18 @@ function openOrderTypesTrainer(modalToClose) {
             desc: "Грузчики на выгрузку, 400₽/ч", 
             basePrice: 4000, 
             audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/kostroma-vigruzka.mp3",
-            city: "Кострома"
+            city: "Кострома",
+            address: "ул. Советская, 15",
+            datetime: "2025-06-15T10:00"
         },
         { 
             title: "🏠 Обычный переезд", 
             desc: "Перевозка мебели, Вологда, 500₽/ч", 
             basePrice: 5000, 
             audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/pereezd-vologda.mp3",
-            city: "Вологда"
+            city: "Вологда",
+            address: "пр. Победы, 33",
+            datetime: "2025-06-16T14:00"
         },
         { 
             title: "🚛 Вывоз мусора", 
@@ -317,6 +303,8 @@ function openOrderTypesTrainer(modalToClose) {
             basePrice: 5000, 
             audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/tumen-vivozmusora.mp3",
             city: "Тюмень",
+            address: "ул. Республики, 5",
+            datetime: "2025-06-17T09:00",
             gazelleNeeded: true
         },
         { 
@@ -324,21 +312,27 @@ function openOrderTypesTrainer(modalToClose) {
             desc: "Орск, 450₽/ч, смена 8ч", 
             basePrice: 3600, 
             audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/orsk-raznorabochii.mp3",
-            city: "Орск"
+            city: "Орск",
+            address: "ул. Станиславского, 8",
+            datetime: "2025-06-18T08:00"
         },
         { 
             title: "🏢 Юр.клиент", 
             desc: "Офисный переезд, полный спектр услуг", 
             basePrice: 12000, 
             audio: "https://github.com/kronosik2/HTML-/raw/refs/heads/main/audio/ur-client.mp3",
-            city: "Москва"
+            city: "Москва",
+            address: "ул. Тверская, 10",
+            datetime: "2025-06-19T11:00"
         },
         { 
             title: "🌲 Переезд за город", 
             desc: "Из города в область, дача, мебель", 
             basePrice: 9000, 
             audio: null,
-            city: "Москва"
+            city: "Москва",
+            address: "пос. Новое, ул. Дачная, 7",
+            datetime: "2025-06-20T12:00"
         }
     ];
     
@@ -366,13 +360,18 @@ function openOrderTypesTrainer(modalToClose) {
                 <h3>📋 Составление заявки: ${order.title}</h3>
                 <div style="margin:16px 0"><strong>Город:</strong> ${order.city}</div>
                 <div style="margin:16px 0"><strong>Описание:</strong> ${order.desc}</div>
-                <div style="margin:16px 0"><strong>💰 Стартовая цена (минималка по городу):</strong> от ${cityMinPrice} ₽</div>
                 
                 ${audioHtml}
                 
+                <div class="material-section" style="margin-bottom:16px;">
+                    <div class="form-field"><label>📍 Адрес</label><input type="text" id="addressInput" value="${order.address}" placeholder="ул. Примерная, д.1"></div>
+                    <div class="form-field"><label>📅 Дата и время</label><input type="datetime-local" id="datetimeInput" value="${order.datetime}"></div>
+                </div>
+                
                 <div style="margin:16px 0">
-                    <label><strong>Укажите итоговую цену для клиента (₽):</strong></label>
+                    <label><strong>💰 Укажите итоговую цену для клиента (₽):</strong></label>
                     <input type="number" id="priceInput" value="${order.basePrice}" style="width:100%; padding:10px; margin-top:8px; border-radius:12px; border:1px solid #cbd5e1;">
+                    <div style="font-size:12px; color:#64748b; margin-top:4px;">Стартовая цена (минималка по городу): от ${cityMinPrice} ₽</div>
                 </div>
                 
                 ${order.gazelleNeeded ? `
@@ -387,7 +386,7 @@ function openOrderTypesTrainer(modalToClose) {
                 <div id="feedback" style="margin-top:16px; padding:12px; border-radius:12px; display:none;"></div>
                 
                 <div style="margin-top:24px; display:flex; gap:12px; justify-content:space-between;">
-                    <button id="checkPriceBtn" class="btn-primary">Проверить цену</button>
+                    <button id="checkPriceBtn" class="btn-primary">Проверить заявку</button>
                     <button id="nextOrderBtn" class="btn-primary" style="display:none;">Следующая заявка →</button>
                 </div>
                 <button class="btn-outline" id="closeOrderBtn" style="margin-top:16px;">Закрыть</button>
@@ -413,22 +412,38 @@ function openOrderTypesTrainer(modalToClose) {
         
         modal.querySelector('#checkPriceBtn').onclick = () => {
             let price = parseInt(modal.querySelector('#priceInput').value);
+            let address = modal.querySelector('#addressInput').value.trim();
+            let datetime = modal.querySelector('#datetimeInput').value;
             const feedback = modal.querySelector('#feedback');
             const minAcceptable = cityMinPrice;
+            
+            let errorList = [];
+            if (!address) errorList.push("⚠️ Укажите адрес");
+            if (!datetime) errorList.push("⚠️ Укажите дату и время");
+            if (price < minAcceptable) errorList.push(`⚠️ Цена ниже минимальной по городу (${minAcceptable} ₽)`);
+            
+            if (errorList.length > 0) {
+                feedback.style.display = 'block';
+                feedback.style.background = '#fee2e2';
+                feedback.innerHTML = `<strong>❌ Ошибки в заявке:</strong><br>${errorList.join('<br>')}`;
+                return;
+            }
             
             if (price >= order.basePrice) {
                 feedback.style.display = 'block';
                 feedback.style.background = '#dcfce7';
-                feedback.innerHTML = `✅ Отличная цена! (${price} ₽)<br>• Минималка по городу: ${minAcceptable} ₽<br>• Рекомендуемая стартовая: от ${order.basePrice} ₽`;
+                feedback.innerHTML = `✅ Отличная заявка!<br>• Адрес: ${address}<br>• Дата: ${datetime}<br>• Цена: ${price} ₽ (выше рекомендуемой)<br>• Минималка по городу: ${minAcceptable} ₽`;
             } else if (price >= minAcceptable) {
                 feedback.style.display = 'block';
                 feedback.style.background = '#fef9e3';
-                feedback.innerHTML = `⚠️ Цена ${price} ₽ — приемлемо, но вы могли бы взять выше.<br>• Минималка по городу: ${minAcceptable} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
+                feedback.innerHTML = `⚠️ Заявка принята, но цена занижена.<br>• Адрес: ${address}<br>• Дата: ${datetime}<br>• Цена: ${price} ₽ (приемлемо)<br>• Рекомендуемая: от ${order.basePrice} ₽`;
             } else {
                 feedback.style.display = 'block';
                 feedback.style.background = '#fee2e2';
-                feedback.innerHTML = `❌ Цена ${price} ₽ — ниже минимальной по городу!<br>• Минималка: ${minAcceptable} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
+                feedback.innerHTML = `❌ Заявка отклонена: цена ниже минимальной!<br>• Минималка: ${minAcceptable} ₽<br>• Рекомендуемая: от ${order.basePrice} ₽`;
+                return;
             }
+            
             modal.querySelector('#checkPriceBtn').disabled = true;
             modal.querySelector('#nextOrderBtn').style.display = 'block';
         };
@@ -600,7 +615,7 @@ function openExamModal(blockIdx) {
     modal.querySelector('#closeBtn').onclick = () => modal.remove();
 }
 
-// ========== ОТКРЫТИЕ МОДАЛКИ БЛОКА (с видео-сценариями) ==========
+// ========== ОТКРЫТИЕ МОДАЛКИ БЛОКА ==========
 function openStudyModal(blockIdx) {
     const block = bpBlocks[blockIdx];
     
@@ -617,13 +632,13 @@ function openStudyModal(blockIdx) {
     const isAlreadyCompleted = trainingCompleted[blockIdx];
     const modal = document.createElement('div');
     modal.className = 'modal';
-    const audioHtml = block.audio ? `<audio controls src="${block.audio}" style="width:100%;"></audio>` : '<p>🎧 Аудио будет позже</p>';
+    const audioHtml = block.audio ? `<audio controls src="${block.audio}" style="width:100%;"></audio>` : '';
     
     let trainerBtnHtml = '';
     if (block.hasTrainer && !block.trainerPassed && !isAlreadyCompleted) {
         if (blockIdx === 0) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
         else if (blockIdx === 1) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр (ценообразование)</button>`;
-        else if (blockIdx === 2) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр (заявки)</button>`;
+        else if (blockIdx === 2) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр (заявки + газель)</button>`;
         else if (blockIdx === 3) trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
         else trainerBtnHtml = `<button id="trainerBtn" class="btn-primary" style="width:100%;">🎮 Пройти тренажёр</button>`;
     } else if (block.hasTrainer && (block.trainerPassed || isAlreadyCompleted)) {
@@ -639,8 +654,18 @@ function openStudyModal(blockIdx) {
         examSection = '<p style="text-align:center;">🔒 Сначала пройдите тренажёр</p>';
     }
     
+    // Вместо аудио и скрипта — короткое руководство (для блока 2)
+    let guideHtml = '';
+    if (block.shortGuide) {
+        guideHtml = `
+            <div class="material-section" style="background:#eef2ff; margin-bottom:16px; border-radius:16px; padding:20px;">
+                <div style="white-space:pre-wrap;">${block.shortGuide}</div>
+            </div>
+        `;
+    }
+    
     let videoScriptHtml = '';
-    if (block.videoScript) {
+    if (block.videoScript && !block.shortGuide) {
         videoScriptHtml = `
             <div class="material-section" style="background:#1e293b; color:white; margin-bottom:16px; border-radius:16px; padding:20px;">
                 <div style="font-size:18px; font-weight:600; margin-bottom:12px;">🎥 Скоро здесь появится видео</div>
@@ -652,6 +677,7 @@ function openStudyModal(blockIdx) {
     modal.innerHTML = `
     <div class="modal-content" style="max-width:600px; width:100%;">
         <h3 style="margin-bottom:20px;">${block.title}</h3>
+        ${guideHtml}
         ${videoScriptHtml}
         <div class="material-section" style="background:#fef9e3; margin-bottom:16px;">
             <div><strong>🎯 ЦЕЛЬ:</strong> ${block.goal}</div>
@@ -659,10 +685,7 @@ function openStudyModal(blockIdx) {
             <div style="margin-top:8px;"><strong>✅ РЕЗУЛЬТАТ:</strong> ${block.result}</div>
             <div style="margin-top:8px;"><strong>🛠️ ИНСТРУМЕНТЫ:</strong> ${block.tools}</div>
         </div>
-        <div class="material-section" style="margin-bottom:16px;">
-            <h4>🎧 Аудио</h4>
-            ${audioHtml}
-        </div>
+        ${audioHtml ? `<div class="material-section" style="margin-bottom:16px;"><h4>🎧 Аудио</h4>${audioHtml}</div>` : ''}
         <div class="material-section" style="margin-bottom:16px;">
             <h4>📄 Скрипт</h4>
             <a href="${SCRIPT_URL}" target="_blank" class="btn-primary" style="display:inline-block;">Открыть скрипт</a>
