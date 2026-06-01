@@ -477,10 +477,10 @@
                 body: JSON.stringify(orderPayload)
             });
             const result = await response.json();
-            if (result.success) {
-                alert(`🎉 Заказ №${result.order_id || 'создан'} принят! Ссылка на оплату и статус придут в бота.`);
-                if (result.payment_url) window.location.href = result.payment_url;
-            } else {
+          if (result.success) {
+    window.location.href = `success.html?order_id=${result.order_id}&track_url=${encodeURIComponent(result.track_url)}&payment_url=${encodeURIComponent(result.payment_url)}`;
+}
+ else {
                 alert('❌ Ошибка: ' + (result.error || 'повторите'));
             }
         } catch (err) {
