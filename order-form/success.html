@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказ оформлен!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(145deg, #f3f4f6 0%, #e5e7eb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            background: white;
+            border-radius: 40px;
+            padding: 40px 32px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.25);
+        }
+        .icon { font-size: 64px; margin-bottom: 16px; }
+        h1 { font-size: 28px; color: #1e293b; margin-bottom: 8px; }
+        .order-id {
+            font-size: 18px;
+            color: #ff8c42;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+        .links { text-align: left; margin: 24px 0; }
+        .link-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .link-row:hover { background: #eef2ff; }
+        .link-row span { font-size: 20px; }
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(95deg, #ff8c42, #ff6a2c);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+        .loading { color: #6c727f; font-size: 14px; margin-top: 12px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="icon">🎉</div>
+    <h1>Заказ оформлен!</h1>
+    <div class="order-id" id="orderId">Заказ №—</div>
+    
+    <div class="links">
+        <a class="link-row" id="trackLink" href="#" target="_blank">
+            <span>📋</span> Отслеживать статус заказа
+        </a>
+        <a class="link-row" id="payLink" href="#" target="_blank">
+            <span>💳</span> Оплатить заказ
+        </a>
+    </div>
+    
+    <p style="color:#6c727f; font-size:14px;">
+        Ссылки также придут в чат с ботом
+    </p>
+    
+    <a href="javascript:window.close()" class="back-btn">Вернуться в чат</a>
+    <div class="loading" id="loading">Загрузка данных заказа...</div>
+</div>
+
+<script>
+    // Получаем данные из URL
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('order_id') || '—';
+    const trackUrl = params.get('track_url') || '#';
+    const paymentUrl = params.get('payment_url') || '#';
+    
+    document.getElementById('orderId').textContent = 'Заказ №' + orderId;
+    document.getElementById('trackLink').href = trackUrl;
+    document.getElementById('payLink').href = paymentUrl;
+    document.getElementById('loading').style.display = 'none';
+</script>
+</body>
+</html>
